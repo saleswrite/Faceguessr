@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <h1>FaceGuessr</h1>
-            <p class="subtitle">Today's Theme: Historical Faces</p>
+            <p class="subtitle">Today's Theme: <strong>Historical Faces</strong></p>
             <div class="progress-container">
                 <div class="progress-bar">
                     <div id="progress-fill"></div>
@@ -20,18 +20,6 @@
                 </p>
             </div>
         </header>
-
-        <!-- Rules Section -->
-        <section class="rules-section">
-            <h3>Rules of FaceGuessr</h3>
-            <p class="rules-intro">Guess the face shown on today's card. Type the person's full name into the box and submit. You'll find a short cryptic clue to help you.</p>
-            <ul class="rules-list">
-                <li>You get one guess per face.</li>
-                <li>If you're right, you'll see a ✅ and your score will update.</li>
-                <li>If you're wrong, you'll see ❌ along with the correct answer.</li>
-                <li>Come back tomorrow for a new challenge!</li>
-            </ul>
-        </section>
 
         <main>
             <div class="game-board">
@@ -86,6 +74,18 @@
                 <button id="show-results-btn" class="show-results-btn">View Results</button>
             </div>
         </main>
+
+        <!-- Rules Section -->
+        <section class="rules-section">
+            <h3>Rules of FaceGuessr</h3>
+            <p class="rules-intro">Guess the face shown on today's card. Type the person's full name into the box and submit. You'll find a short cryptic clue to help you.</p>
+            <ul class="rules-list">
+                <li>You get one guess per face.</li>
+                <li>If you're right, you'll see a ✅ and your score will update.</li>
+                <li>If you're wrong, you'll see ❌ along with the correct answer.</li>
+                <li>Come back tomorrow for a new challenge!</li>
+            </ul>
+        </section>
 
         <footer>
             <p>5 faces daily • Resets at midnight GMT • Score: <span id="current-score">0</span>/5</p>

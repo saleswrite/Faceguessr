@@ -977,10 +977,10 @@ footer {
 }
 
 
-/* Rules Section Styling */
+/* Rules Section Styling - Now positioned at bottom */
 .rules-section {
     max-width: 500px;
-    margin: 0 auto 30px auto;
+    margin: 30px auto 20px auto;
     padding: 20px;
     background-color: #1a1a1b;
     border-radius: 12px;
@@ -1037,7 +1037,7 @@ footer {
 /* Mobile responsive rules section */
 @media (max-width: 600px) {
     .rules-section {
-        margin: 0 auto 20px auto;
+        margin: 20px auto 15px auto;
         padding: 16px;
     }
     
