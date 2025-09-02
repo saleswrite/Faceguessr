@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceGuessr - Daily Historical Figure Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FaceGuessr</h1>
+            <p class="subtitle">Guess the historical figure</p>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <p class="question-counter">
+                    Question <span id="current-question">1</span> of <span id="total-questions">5</span>
+                </p>
+            </div>
+        </header>
+
+        <main>
+            <div class="game-board">
+                <div class="image-container">
+                    <img id="person-image" src="" alt="Historical figure" />
+                </div>
+                
+                <div class="clue-container">
+                    <p id="cryptic-clue"></p>
+                </div>
+
+                <div class="guess-container">
+                    <input 
+                        type="text" 
+                        id="guess-input" 
+                        placeholder="Enter your guess..."
+                        maxlength="50"
+                    />
+                    <div class="button-container">
+                        <button id="previous-question-btn" class="hidden">Previous</button>
+                        <button id="submit-btn">Submit Guess</button>
+                        <button id="next-btn" class="hidden">Next Question</button>
+                    </div>
+                </div>
+
+                <div class="feedback-container">
+                    <div id="feedback-message"></div>
+                </div>
+                
+                <!-- Suggestion Dialog -->
+                <div id="suggestion-dialog" class="suggestion-dialog hidden">
+                    <div class="suggestion-content">
+                        <p class="suggestion-text">Did you mean:</p>
+                        <p class="suggested-answer" id="suggested-answer"></p>
+                        <div class="suggestion-buttons">
+                            <button id="yes-btn" class="suggestion-btn yes-btn">Yes</button>
+                            <button id="no-btn" class="suggestion-btn no-btn">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review Navigation (shown after game completion) -->
+            <div id="review-nav" class="review-nav hidden">
+                <div class="review-controls">
+                    <button id="prev-btn" class="nav-btn">‹ Previous</button>
+                    <span class="review-indicator">
+                        Reviewing: <span id="review-question">1</span> of 5
+                    </span>
+                    <button id="next-btn-review" class="nav-btn">Next ›</button>
+                </div>
+                <button id="show-results-btn" class="show-results-btn">View Results</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>5 faces daily • Resets at midnight GMT • Score: <span id="current-score">0</span>/5</p>
+        </footer>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="results-screen hidden">
+            <div class="results-content">
+                <button id="close-results" class="close-btn">&times;</button>
+                <h2>Today's Results</h2>
+                <div class="final-score">
+                    <span id="final-score">0</span>/5
+                </div>
+                <div class="score-breakdown">
+                    <div id="score-details"></div>
+                </div>
+                <div class="share-section">
+                    <button id="share-btn">Share Your Score</button>
+                    <div id="share-text" class="share-text hidden">
+                        <textarea id="share-textarea" readonly></textarea>
+                        <button id="copy-btn">Copy to Clipboard</button>
+                    </div>
+                </div>
+                <div class="next-game-info">
+                    <p>Next game in: <span id="countdown"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
