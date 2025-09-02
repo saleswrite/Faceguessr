@@ -493,7 +493,7 @@ class FaceGuessrGame {
             shareString += answer.correct ? '🟩 ' : '🟥 ';
         });
         
-        shareString += `\n\nGuess 5 historical figures daily!\nhttps://faceguessr.com`;
+        shareString += `\n\nGuess 5 historical figures daily!\nhttps://saleswrite.github.io/Faceguessr/`;
         
         this.shareTextarea.value = shareString;
         this.shareText.classList.remove('hidden');
