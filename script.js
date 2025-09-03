@@ -1,35 +1,75 @@
-const historicalFigures = [
-    {
-        name: "Hypatia of Alexandria",
-        alternativeNames: ["Hypatia", "Hypathia"],
-        clue: "A voice of reason in the Library's twilight, silenced by zeal.",
-        imageUrl: "images/hypatia.jpg"
+const themes = {
+    1: {
+        name: "Historical Faces",
+        figures: [
+            {
+                name: "Hypatia of Alexandria",
+                alternativeNames: ["Hypatia", "Hypathia"],
+                clue: "A voice of reason in the Library's twilight, silenced by zeal.",
+                imageUrl: "images/hypatia.jpg"
+            },
+            {
+                name: "Sitting Bull",
+                alternativeNames: ["Sitting Bull", "Tatanka Iyotanka"],
+                clue: "A vision of horses and a stand at Little Bighorn.",
+                imageUrl: "images/sittingbull.jpg"
+            },
+            {
+                name: "Imhotep",
+                alternativeNames: ["Imhotep", "Imouthes"],
+                clue: "Stone stacked for eternity by a healer of kings.",
+                imageUrl: "images/imhotep.jpg"
+            },
+            {
+                name: "Florence Nightingale",
+                alternativeNames: ["Florence Nightingale", "Lady with the Lamp"],
+                clue: "A shadow with a lamp in a Crimean night.",
+                imageUrl: "images/florencenightingale.avif"
+            },
+            {
+                name: "Toussaint Louverture",
+                alternativeNames: ["Toussaint Louverture", "Toussaint L'Ouverture", "François-Dominique Toussaint Louverture"],
+                clue: "A Black Jacobin whose revolution burned brighter than Napoleon's star.",
+                imageUrl: "images/Toussaint_Louverture.jpg"
+            }
+        ]
     },
-    {
-        name: "Sitting Bull",
-        alternativeNames: ["Sitting Bull", "Tatanka Iyotanka"],
-        clue: "A vision of horses and a stand at Little Bighorn.",
-        imageUrl: "images/sittingbull.jpg"
-    },
-    {
-        name: "Imhotep",
-        alternativeNames: ["Imhotep", "Imouthes"],
-        clue: "Stone stacked for eternity by a healer of kings.",
-        imageUrl: "images/imhotep.jpg"
-    },
-    {
-        name: "Florence Nightingale",
-        alternativeNames: ["Florence Nightingale", "Lady with the Lamp"],
-        clue: "A shadow with a lamp in a Crimean night.",
-        imageUrl: "images/florencenightingale.avif"
-    },
-    {
-        name: "Toussaint Louverture",
-        alternativeNames: ["Toussaint Louverture", "Toussaint L'Ouverture", "François-Dominique Toussaint Louverture"],
-        clue: "A Black Jacobin whose revolution burned brighter than Napoleon's star.",
-        imageUrl: "images/Toussaint_Louverture.jpg"
+    2: {
+        name: "Business Faces",
+        figures: [
+            {
+                name: "Kevin O'Leary",
+                alternativeNames: ["Kevin O'Leary", "Mr. Wonderful"],
+                clue: "A sharp tongue on screens, a 'dragon' with polished shoes, fortune whispered in cold cash.",
+                imageUrl: "images/kevin_oleary.jpg"
+            },
+            {
+                name: "Peter Thiel",
+                alternativeNames: ["Peter Thiel", "Peter Andreas Thiel"],
+                clue: "From the depths of online payments to the heights of data's gaze, a contrarian mind sails west.",
+                imageUrl: "images/peter_thiel.jpg"
+            },
+            {
+                name: "Phil Knight",
+                alternativeNames: ["Phil Knight", "Philip Knight", "Philip Hampson Knight"],
+                clue: "A swoosh born from Oregon tracks, running shoes turned empire — yet the man lingers in shadow.",
+                imageUrl: "images/phil_knight.jpg"
+            },
+            {
+                name: "Satya Nadella",
+                alternativeNames: ["Satya Nadella", "Satya Narayana Nadella"],
+                clue: "From cricket pitches to the cloud, a quiet hand steers an empire of windows toward the sky.",
+                imageUrl: "images/satya_nadella.jpg"
+            },
+            {
+                name: "Steve Wozniak",
+                alternativeNames: ["Steve Wozniak", "Stephen Wozniak", "Woz", "Stephen Gary Wozniak"],
+                clue: "The engineer in the garage, wires and chips his canvas; a prankster behind the fruit's first bite.",
+                imageUrl: "images/steve_wozniak.jpg"
+            }
+        ]
     }
-];
+};
 
 class FaceGuessrGame {
     constructor() {
@@ -83,6 +123,7 @@ class FaceGuessrGame {
         this.howToPlayModal = document.getElementById('how-to-play-modal');
         this.closeHowToPlayBtn = document.getElementById('close-how-to-play');
         this.rulesBtn = document.getElementById('rules-btn');
+        this.subtitle = document.querySelector('.subtitle');
     }
 
     setupEventListeners() {
@@ -159,6 +200,12 @@ class FaceGuessrGame {
             this.currentQuestionIndex = gameData.currentQuestionIndex;
             this.dailyFigures = gameData.dailyFigures;
             
+            // Set theme name for saved games
+            const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
+            const currentTheme = themes[dayNumber];
+            this.currentThemeName = currentTheme ? currentTheme.name : themes[1].name;
+            this.updateThemeSubtitle();
+            
             if (this.currentQuestionIndex >= this.totalQuestions) {
                 this.showResults();
                 return;
@@ -172,8 +219,27 @@ class FaceGuessrGame {
     }
 
     generateDailyFigures() {
-        // Always use the same 5 figures in the same order
-        this.dailyFigures = [...historicalFigures];
+        // Get current day number to determine theme
+        const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
+        const currentTheme = themes[dayNumber];
+        
+        if (currentTheme) {
+            this.dailyFigures = [...currentTheme.figures];
+            this.currentThemeName = currentTheme.name;
+        } else {
+            // Fallback to theme 1 if day not found
+            this.dailyFigures = [...themes[1].figures];
+            this.currentThemeName = themes[1].name;
+        }
+        
+        // Update the subtitle with current theme
+        this.updateThemeSubtitle();
+    }
+
+    updateThemeSubtitle() {
+        if (this.subtitle && this.currentThemeName) {
+            this.subtitle.innerHTML = `Today's Theme: <strong>${this.currentThemeName}</strong>`;
+        }
     }
 
     updateUI() {
@@ -520,7 +586,7 @@ class FaceGuessrGame {
             shareString += answer.correct ? '🟩 ' : '🟥 ';
         });
         
-        shareString += `\n\nGuess 5 historical figures daily!\nhttps://saleswrite.github.io/Faceguessr/`;
+        shareString += `\n\nGuess 5 new faces daily - new theme every day!\nhttps://saleswrite.github.io/Faceguessr/`;
         
         this.shareTextarea.value = shareString;
         this.shareText.classList.remove('hidden');
