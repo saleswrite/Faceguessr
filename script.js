@@ -47,6 +47,7 @@ class FaceGuessrGame {
         this.initializeElements();
         this.setupEventListeners();
         this.loadTodaysGame();
+        this.checkFirstVisit();
     }
 
     initializeElements() {
@@ -79,6 +80,8 @@ class FaceGuessrGame {
         this.nextBtnReview = document.getElementById('next-btn-review');
         this.reviewQuestion = document.getElementById('review-question');
         this.showResultsBtn = document.getElementById('show-results-btn');
+        this.howToPlayModal = document.getElementById('how-to-play-modal');
+        this.closeHowToPlayBtn = document.getElementById('close-how-to-play');
     }
 
     setupEventListeners() {
@@ -105,6 +108,7 @@ class FaceGuessrGame {
         this.prevBtn.addEventListener('click', () => this.previousAnswer());
         this.nextBtnReview.addEventListener('click', () => this.nextAnswer());
         this.showResultsBtn.addEventListener('click', () => this.showResults());
+        this.closeHowToPlayBtn.addEventListener('click', () => this.closeHowToPlay());
         
         this.guessInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -668,6 +672,23 @@ class FaceGuessrGame {
 
         this.updateProgress();
         this.saveGame();
+    }
+
+    showHowToPlay() {
+        this.howToPlayModal.classList.remove('hidden');
+    }
+
+    closeHowToPlay() {
+        this.howToPlayModal.classList.add('hidden');
+    }
+
+    checkFirstVisit() {
+        const hasVisited = localStorage.getItem('faceguessr_has_visited');
+        if (!hasVisited) {
+            // Show the How to Play modal for first-time visitors
+            this.showHowToPlay();
+            localStorage.setItem('faceguessr_has_visited', 'true');
+        }
     }
 }
 

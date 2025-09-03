@@ -75,21 +75,39 @@
             </div>
         </main>
 
-        <!-- Rules Section -->
-        <section class="rules-section">
-            <h3>Rules of FaceGuessr</h3>
-            <p class="rules-intro">Guess the face shown on today's card. Type the person's full name into the box and submit. You'll find a short cryptic clue to help you.</p>
-            <ul class="rules-list">
-                <li>You get one guess per face.</li>
-                <li>If you're right, you'll see a ✅ and your score will update.</li>
-                <li>If you're wrong, you'll see ❌ along with the correct answer.</li>
-                <li>Come back tomorrow for a new challenge!</li>
-            </ul>
-        </section>
 
         <footer>
             <p>5 faces daily • Resets at midnight GMT • Score: <span id="current-score">0</span>/5</p>
         </footer>
+
+        <!-- How to Play Popup -->
+        <div id="how-to-play-modal" class="how-to-play-modal hidden">
+            <div class="how-to-play-content">
+                <button id="close-how-to-play" class="close-btn">&times;</button>
+                <h2>How to Play</h2>
+                <div class="rules-explanation">
+                    <p class="rules-intro">Guess the 5 historical figures from today's theme using their photos and cryptic clues.</p>
+                    
+                    <div class="rules-section">
+                        <h3>Game Rules</h3>
+                        <ul class="rules-list">
+                            <li>Each day features a different theme of historical faces</li>
+                            <li>You get <strong>one guess per face</strong> - make it count!</li>
+                            <li>Use the cryptic clue to help identify each person</li>
+                            <li>Type the person's full name and hit submit</li>
+                            <li>Correct answers show ✅ and increase your score</li>
+                            <li>Wrong answers show ❌ and reveal the correct name</li>
+                            <li>Navigate between questions using Previous/Next buttons</li>
+                            <li>Share your daily score with friends!</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="rules-footer">
+                        <p>New puzzles daily at midnight GMT • Come back tomorrow for a fresh challenge!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Results Screen -->
         <div id="results-screen" class="results-screen hidden">
