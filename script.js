@@ -140,7 +140,8 @@ class FaceGuessrGame {
     }
 
     getDaysSinceEpoch() {
-        const epoch = new Date('2024-01-01');
+        // Game launch date - set to September 3, 2025 so today is day 1
+        const epoch = new Date('2025-09-03');
         const today = this.getTodayGMT();
         const diffTime = today.getTime() - epoch.getTime();
         return Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -509,8 +510,9 @@ class FaceGuessrGame {
     showShareText() {
         const today = this.getTodayGMT().toLocaleDateString();
         const dayNumber = this.getDaysSinceEpoch() + 1;
+        const formattedDayNumber = dayNumber.toString().padStart(2, '0');
         
-        let shareString = `FaceGuessr ${dayNumber} ${this.score}/5\n\n`;
+        let shareString = `FaceGuessr ${formattedDayNumber} ${this.score}/5\n\n`;
         
         this.answers.forEach((answer) => {
             shareString += answer.correct ? '🟩 ' : '🟥 ';
