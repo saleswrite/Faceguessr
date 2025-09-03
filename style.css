@@ -192,8 +192,26 @@ main {
 }
 
 #feedback-message.incorrect {
-    background-color: #787c7e;
+    background-color: #c5554d;
     color: #ffffff;
+}
+
+/* Shake animation for feedback messages */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-6px); }
+    20% { transform: translateX(6px); }
+    30% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    50% { transform: translateX(-3px); }
+    60% { transform: translateX(3px); }
+    70% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+    90% { transform: translateX(-1px); }
+}
+
+#feedback-message.shake {
+    animation: shake 0.6s ease-in-out;
 }
 
 footer {

@@ -364,12 +364,20 @@ class FaceGuessrGame {
         this.feedbackMessage.className = '';
         
         if (isCorrect) {
-            this.feedbackMessage.textContent = "Correct! Well done!";
+            this.feedbackMessage.textContent = "✅ Correct! Well done!";
             this.feedbackMessage.classList.add('correct');
         } else {
-            this.feedbackMessage.textContent = `Wrong! The correct answer is ${correctName}.`;
+            this.feedbackMessage.textContent = `❌ Wrong! The correct answer is ${correctName}.`;
             this.feedbackMessage.classList.add('incorrect');
         }
+        
+        // Trigger shake animation
+        this.feedbackMessage.classList.add('shake');
+        
+        // Remove shake class after animation completes to allow re-triggering
+        setTimeout(() => {
+            this.feedbackMessage.classList.remove('shake');
+        }, 600);
 
         // Disable input
         this.guessInput.disabled = true;
@@ -437,10 +445,10 @@ class FaceGuessrGame {
         // Show feedback
         this.feedbackMessage.className = '';
         if (answer.correct) {
-            this.feedbackMessage.textContent = `Your guess: "${answer.guess}" - Correct!`;
+            this.feedbackMessage.textContent = `✅ Your guess: "${answer.guess}" - Correct!`;
             this.feedbackMessage.classList.add('correct');
         } else {
-            this.feedbackMessage.textContent = `Your guess: "${answer.guess}" - Wrong! Answer: ${answer.answer}`;
+            this.feedbackMessage.textContent = `❌ Your guess: "${answer.guess}" - Wrong! Answer: ${answer.answer}`;
             this.feedbackMessage.classList.add('incorrect');
         }
         
@@ -607,10 +615,10 @@ class FaceGuessrGame {
         // Show what the user guessed and if it was correct
         this.feedbackMessage.className = '';
         if (reviewAnswer.correct) {
-            this.feedbackMessage.textContent = `Your guess: "${reviewAnswer.guess}" - Correct!`;
+            this.feedbackMessage.textContent = `✅ Your guess: "${reviewAnswer.guess}" - Correct!`;
             this.feedbackMessage.classList.add('correct');
         } else {
-            this.feedbackMessage.textContent = `Your guess: "${reviewAnswer.guess}" - Wrong! Answer: ${reviewAnswer.answer}`;
+            this.feedbackMessage.textContent = `❌ Your guess: "${reviewAnswer.guess}" - Wrong! Answer: ${reviewAnswer.answer}`;
             this.feedbackMessage.classList.add('incorrect');
         }
     }
