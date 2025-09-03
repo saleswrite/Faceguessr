@@ -82,6 +82,7 @@ class FaceGuessrGame {
         this.showResultsBtn = document.getElementById('show-results-btn');
         this.howToPlayModal = document.getElementById('how-to-play-modal');
         this.closeHowToPlayBtn = document.getElementById('close-how-to-play');
+        this.rulesBtn = document.getElementById('rules-btn');
     }
 
     setupEventListeners() {
@@ -109,6 +110,7 @@ class FaceGuessrGame {
         this.nextBtnReview.addEventListener('click', () => this.nextAnswer());
         this.showResultsBtn.addEventListener('click', () => this.showResults());
         this.closeHowToPlayBtn.addEventListener('click', () => this.closeHowToPlay());
+        this.rulesBtn.addEventListener('click', () => this.showHowToPlay());
         
         this.guessInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -326,6 +328,9 @@ class FaceGuessrGame {
         this.suggestedAnswer.textContent = suggestion;
         this.suggestionDialog.classList.remove('hidden');
         
+        // Prevent body scrolling while dialog is open
+        document.body.style.overflow = 'hidden';
+        
         // Disable input while waiting for response
         this.guessInput.disabled = true;
         this.submitBtn.disabled = true;
@@ -334,6 +339,9 @@ class FaceGuessrGame {
     acceptSuggestion() {
         this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
+        
+        // Restore body scrolling
+        document.body.style.overflow = '';
         
         // Process as correct answer with the suggested name
         this.processCorrectAnswer(this.currentSuggestion.suggestion, this.currentSuggestion.figure);
@@ -344,6 +352,9 @@ class FaceGuessrGame {
     rejectSuggestion() {
         this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
+        
+        // Restore body scrolling
+        document.body.style.overflow = '';
         
         // Process as incorrect answer with original guess
         this.processIncorrectAnswer(this.currentSuggestion.originalGuess, this.currentSuggestion.figure);
@@ -663,9 +674,14 @@ class FaceGuessrGame {
             const resultDiv = document.createElement('div');
             resultDiv.className = `result-item ${answer.correct ? 'correct' : 'incorrect'}`;
             resultDiv.innerHTML = `
-                <span class="question-num">${answer.question}.</span>
-                <span class="result-icon">${answer.correct ? '✓' : '✗'}</span>
-                <span class="answer-text">${answer.answer}</span>
+                <div class="result-info">
+                    <span class="question-num">${answer.question}.</span>
+                    <span class="result-icon">${answer.correct ? '✓' : '✗'}</span>
+                    <span class="answer-text">${answer.answer}</span>
+                </div>
+                <div class="result-progress-bar">
+                    <div class="result-progress-fill ${answer.correct ? 'correct-fill' : 'incorrect-fill'}"></div>
+                </div>
             `;
             this.scoreDetails.appendChild(resultDiv);
         });

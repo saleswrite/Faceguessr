@@ -25,6 +25,28 @@ body {
 header {
     text-align: center;
     margin-bottom: 40px;
+    position: relative;
+}
+
+.rules-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: none;
+    border: 1px solid #3a3a3c;
+    color: #d4d4d4;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.rules-btn:hover {
+    background-color: #3a3a3c;
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
 h1 {
@@ -290,12 +312,19 @@ footer {
 
 .result-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
+    flex-direction: column;
+    padding: 12px 16px 8px 16px;
     margin: 8px 0;
     border-radius: 8px;
     background-color: #2a2a2c;
+    gap: 8px;
+}
+
+.result-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .result-item.correct {
@@ -329,6 +358,38 @@ footer {
     text-align: right;
     font-size: 0.9rem;
     color: #d4d4d4;
+}
+
+.result-progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #3a3a3c;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.result-progress-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 2px;
+    animation: fillBar 0.8s ease-out;
+}
+
+.result-progress-fill.correct-fill {
+    background-color: #6aaa64;
+}
+
+.result-progress-fill.incorrect-fill {
+    background-color: #c5554d;
+}
+
+@keyframes fillBar {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
 }
 
 .share-section {
@@ -405,6 +466,12 @@ footer {
         padding: 15px;
     }
     
+    .rules-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 16px;
+    }
+    
     h1 {
         font-size: 2rem;
     }
@@ -451,19 +518,23 @@ footer {
     }
     
     .result-item {
-        padding: 10px 12px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
+        padding: 10px 12px 6px 12px;
+        gap: 6px;
     }
     
-    .answer-text {
+    .result-info .answer-text {
         text-align: left;
         font-size: 0.8rem;
     }
 }
 
 @media (max-width: 400px) {
+    .rules-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        border-radius: 14px;
+    }
+    
     .image-container {
         width: 200px;
         height: 200px;
@@ -487,13 +558,13 @@ footer {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-color: rgba(18, 18, 19, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999;
+    z-index: 2500;
     backdrop-filter: blur(3px);
 }
 
@@ -507,6 +578,9 @@ footer {
     text-align: center;
     animation: slideIn 0.2s ease-out;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 2500;
+    pointer-events: auto;
 }
 
 .suggestion-text {
@@ -541,6 +615,10 @@ footer {
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
     min-width: 80px;
+    position: relative;
+    z-index: 2501;
+    pointer-events: auto;
+    outline: none;
 }
 
 .suggestion-btn:hover {
@@ -789,12 +867,15 @@ footer {
     
     /* Better result item layout for mobile */
     .result-item {
-        padding: 8px 10px !important;
+        padding: 8px 10px 4px 10px !important;
         margin: 4px 0 !important;
+        gap: 6px;
+    }
+    
+    .result-info {
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
-        gap: 8px;
     }
     
     .result-item .question-num {
