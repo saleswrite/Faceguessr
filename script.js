@@ -4,13 +4,13 @@ const themes = {
         figures: [
             {
                 name: "Hypatia of Alexandria",
-                alternativeNames: ["Hypatia", "Hypathia"],
+                alternativeNames: ["Hypatia", "Hypathia", "Hypatia of Alexandria"],
                 clue: "A voice of reason in the Library's twilight, silenced by zeal.",
                 imageUrl: "images/faceguessr01/hypatia.jpg"
             },
             {
                 name: "Sitting Bull",
-                alternativeNames: ["Sitting Bull", "Tatanka Iyotanka"],
+                alternativeNames: ["Sitting Bull", "Tatanka Iyotanka", "Sitting", "Bull"],
                 clue: "A vision of horses and a stand at Little Bighorn.",
                 imageUrl: "images/faceguessr01/sittingbull.jpg"
             },
@@ -22,13 +22,13 @@ const themes = {
             },
             {
                 name: "Florence Nightingale",
-                alternativeNames: ["Florence Nightingale", "Lady with the Lamp"],
+                alternativeNames: ["Florence Nightingale", "Lady with the Lamp", "Florence", "Nightingale"],
                 clue: "A shadow with a lamp in a Crimean night.",
                 imageUrl: "images/faceguessr01/florencenightingale.avif"
             },
             {
                 name: "Toussaint Louverture",
-                alternativeNames: ["Toussaint Louverture", "Toussaint L'Ouverture", "François-Dominique Toussaint Louverture"],
+                alternativeNames: ["Toussaint Louverture", "Toussaint L'Ouverture", "François-Dominique Toussaint Louverture", "Toussaint", "Louverture"],
                 clue: "A Black Jacobin whose revolution burned brighter than Napoleon's star.",
                 imageUrl: "images/faceguessr01/Toussaint_Louverture.jpg"
             }
@@ -39,33 +39,68 @@ const themes = {
         figures: [
             {
                 name: "Kevin O'Leary",
-                alternativeNames: ["Kevin O'Leary", "Mr. Wonderful"],
+                alternativeNames: ["Kevin O'Leary", "Mr. Wonderful", "Kevin", "O'Leary", "Mr Wonderful"],
                 clue: "A sharp tongue on screens, a 'dragon' with polished shoes, fortune whispered in cold cash.",
                 imageUrl: "images/Faceguessr 02/kevinoleary.jpg"
             },
             {
                 name: "Peter Thiel",
-                alternativeNames: ["Peter Thiel", "Peter Andreas Thiel"],
+                alternativeNames: ["Peter Thiel", "Peter Andreas Thiel", "Peter", "Thiel"],
                 clue: "From the depths of online payments to the heights of data's gaze, a contrarian mind sails west.",
                 imageUrl: "images/Faceguessr 02/peterthiel.jpg"
             },
             {
                 name: "Phil Knight",
-                alternativeNames: ["Phil Knight", "Philip Knight", "Philip Hampson Knight"],
+                alternativeNames: ["Phil Knight", "Philip Knight", "Philip Hampson Knight", "Phil", "Philip", "Knight"],
                 clue: "A swoosh born from Oregon tracks, running shoes turned empire — yet the man lingers in shadow.",
                 imageUrl: "images/Faceguessr 02/Phil-Knight-Nike-2017 (1).webp"
             },
             {
                 name: "Satya Nadella",
-                alternativeNames: ["Satya Nadella", "Satya Narayana Nadella"],
+                alternativeNames: ["Satya Nadella", "Satya Narayana Nadella", "Satya", "Nadella"],
                 clue: "From cricket pitches to the cloud, a quiet hand steers an empire of windows toward the sky.",
                 imageUrl: "images/Faceguessr 02/satyanadella.jpg"
             },
             {
                 name: "Steve Wozniak",
-                alternativeNames: ["Steve Wozniak", "Stephen Wozniak", "Woz", "Stephen Gary Wozniak"],
+                alternativeNames: ["Steve Wozniak", "Stephen Wozniak", "Woz", "Stephen Gary Wozniak", "Steve", "Stephen", "Wozniak"],
                 clue: "The engineer in the garage, wires and chips his canvas; a prankster behind the fruit's first bite.",
                 imageUrl: "images/Faceguessr 02/stevewozniak.jpg"
+            }
+        ]
+    },
+    3: {
+        name: "TV Character Faces",
+        figures: [
+            {
+                name: "Alan Partridge",
+                alternativeNames: ["Alan Partridge", "Alan", "Partridge", "A.P.", "AP"],
+                clue: "Awkward broadcaster nesting in pear tree?",
+                imageUrl: "images/Faceguessr 03/alan partridge .webp"
+            },
+            {
+                name: "George Costanza",
+                alternativeNames: ["George Costanza", "George", "Costanza", "George Louis Costanza", "Georgie"],
+                clue: "Bald man constructs excuses constantly",
+                imageUrl: "images/Faceguessr 03/George-costanza.webp"
+            },
+            {
+                name: "Dr. Nick",
+                alternativeNames: ["Dr. Nick", "Dr Nick", "Doctor Nick", "Nick", "Dr. Riviera", "Nick Riviera", "Doctor Riviera", "Hi Everybody"],
+                clue: "Quack waves hello to everyone!",
+                imageUrl: "images/Faceguessr 03/Dr Nick.jpg"
+            },
+            {
+                name: "Dwight Schrute",
+                alternativeNames: ["Dwight Schrute", "Dwight", "Schrute", "Dwight K. Schrute", "Dwight Kurt Schrute", "Assistant Regional Manager"],
+                clue: "Beet farmer's right with such weird truth",
+                imageUrl: "images/Faceguessr 03/Dwight_Schrute.jpg"
+            },
+            {
+                name: "Frasier Crane",
+                alternativeNames: ["Frasier Crane", "Frasier", "Crane", "Dr. Crane", "Dr Crane", "Dr. Frasier Crane"],
+                clue: "Radio shrink takes flight",
+                imageUrl: "images/Faceguessr 03/frasier crane.jpg"
             }
         ]
     }
@@ -206,7 +241,7 @@ class FaceGuessrGame {
             this.currentThemeName = currentTheme ? currentTheme.name : themes[1].name;
             this.updateThemeSubtitle();
             
-            if (this.currentQuestionIndex >= this.totalQuestions) {
+            if (this.answers.length >= this.totalQuestions) {
                 this.showResults();
                 return;
             }
@@ -267,7 +302,7 @@ class FaceGuessrGame {
 
         const currentFigure = this.dailyFigures[this.currentQuestionIndex];
         this.personImage.src = currentFigure.imageUrl;
-        this.personImage.alt = `Historical figure ${this.currentQuestionIndex + 1}`;
+        this.personImage.alt = `Person ${this.currentQuestionIndex + 1}`;
         this.crypticClue.textContent = currentFigure.clue;
         
         // Reset input state
@@ -321,11 +356,36 @@ class FaceGuessrGame {
         
         allNames.forEach(name => {
             const normalizedName = name.toLowerCase();
+            
+            // Check for partial matches (nickname/first name only)
+            const nameWords = normalizedName.split(' ');
+            const guessWords = normalizedGuess.split(' ');
+            
+            // Check if guess matches any single word in the name (for nicknames)
+            let foundPartialMatch = false;
+            nameWords.forEach(nameWord => {
+                guessWords.forEach(guessWord => {
+                    if (nameWord.length >= 3 && guessWord.length >= 3) {
+                        const wordDistance = this.levenshteinDistance(guessWord, nameWord);
+                        const wordSimilarity = 1 - (wordDistance / Math.max(guessWord.length, nameWord.length));
+                        if (wordSimilarity > 0.75 && !foundPartialMatch) {
+                            bestMatch = name;
+                            foundPartialMatch = true;
+                        }
+                    }
+                });
+            });
+            
+            // Full name comparison with more generous threshold
             const distance = this.levenshteinDistance(normalizedGuess, normalizedName);
             const similarity = 1 - (distance / Math.max(normalizedGuess.length, normalizedName.length));
             
-            // Consider it a close match if similarity > 70% and distance <= 3
-            if (similarity > 0.7 && distance <= 3 && similarity > bestSimilarity) {
+            // More generous matching: similarity > 60% and distance <= 4, or very short names
+            const isShortName = Math.min(normalizedGuess.length, normalizedName.length) <= 6;
+            const threshold = isShortName ? 0.5 : 0.6;
+            const maxDistance = isShortName ? 2 : 4;
+            
+            if (similarity > threshold && distance <= maxDistance && similarity > bestSimilarity) {
                 bestMatch = name;
                 bestDistance = distance;
                 bestSimilarity = similarity;
