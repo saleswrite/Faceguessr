@@ -212,7 +212,7 @@ class FaceGuessrGame {
         const utcYear = now.getUTCFullYear();
         const utcMonth = now.getUTCMonth();
         const utcDate = now.getUTCDate();
-        return new Date(utcYear, utcMonth, utcDate);
+        return new Date(Date.UTC(utcYear, utcMonth, utcDate));
     }
 
     getDaysSinceEpoch() {
@@ -673,11 +673,11 @@ class FaceGuessrGame {
     startCountdown() {
         const updateCountdown = () => {
             const now = new Date();
-            const currentUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 
+            const currentUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 
                                        now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
             
             // Calculate next midnight GMT
-            const nextMidnightUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0);
+            const nextMidnightUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0);
             
             const diff = nextMidnightUTC - currentUTC;
             
