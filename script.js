@@ -6,31 +6,31 @@ const themes = {
                 name: "Hypatia of Alexandria",
                 alternativeNames: ["Hypatia", "Hypathia"],
                 clue: "A voice of reason in the Library's twilight, silenced by zeal.",
-                imageUrl: "images/hypatia.jpg"
+                imageUrl: "images/faceguessr01/hypatia.jpg"
             },
             {
                 name: "Sitting Bull",
                 alternativeNames: ["Sitting Bull", "Tatanka Iyotanka"],
                 clue: "A vision of horses and a stand at Little Bighorn.",
-                imageUrl: "images/sittingbull.jpg"
+                imageUrl: "images/faceguessr01/sittingbull.jpg"
             },
             {
                 name: "Imhotep",
                 alternativeNames: ["Imhotep", "Imouthes"],
                 clue: "Stone stacked for eternity by a healer of kings.",
-                imageUrl: "images/imhotep.jpg"
+                imageUrl: "images/faceguessr01/imhotep.jpg"
             },
             {
                 name: "Florence Nightingale",
                 alternativeNames: ["Florence Nightingale", "Lady with the Lamp"],
                 clue: "A shadow with a lamp in a Crimean night.",
-                imageUrl: "images/florencenightingale.avif"
+                imageUrl: "images/faceguessr01/florencenightingale.avif"
             },
             {
                 name: "Toussaint Louverture",
                 alternativeNames: ["Toussaint Louverture", "Toussaint L'Ouverture", "François-Dominique Toussaint Louverture"],
                 clue: "A Black Jacobin whose revolution burned brighter than Napoleon's star.",
-                imageUrl: "images/Toussaint_Louverture.jpg"
+                imageUrl: "images/faceguessr01/Toussaint_Louverture.jpg"
             }
         ]
     },
@@ -41,31 +41,31 @@ const themes = {
                 name: "Kevin O'Leary",
                 alternativeNames: ["Kevin O'Leary", "Mr. Wonderful"],
                 clue: "A sharp tongue on screens, a 'dragon' with polished shoes, fortune whispered in cold cash.",
-                imageUrl: "images/kevin_oleary.jpg"
+                imageUrl: "images/Faceguessr 02/kevinoleary.jpg"
             },
             {
                 name: "Peter Thiel",
                 alternativeNames: ["Peter Thiel", "Peter Andreas Thiel"],
                 clue: "From the depths of online payments to the heights of data's gaze, a contrarian mind sails west.",
-                imageUrl: "images/peter_thiel.jpg"
+                imageUrl: "images/Faceguessr 02/peterthiel.jpg"
             },
             {
                 name: "Phil Knight",
                 alternativeNames: ["Phil Knight", "Philip Knight", "Philip Hampson Knight"],
                 clue: "A swoosh born from Oregon tracks, running shoes turned empire — yet the man lingers in shadow.",
-                imageUrl: "images/phil_knight.jpg"
+                imageUrl: "images/Faceguessr 02/Phil-Knight-Nike-2017 (1).webp"
             },
             {
                 name: "Satya Nadella",
                 alternativeNames: ["Satya Nadella", "Satya Narayana Nadella"],
                 clue: "From cricket pitches to the cloud, a quiet hand steers an empire of windows toward the sky.",
-                imageUrl: "images/satya_nadella.jpg"
+                imageUrl: "images/Faceguessr 02/satyanadella.jpg"
             },
             {
                 name: "Steve Wozniak",
                 alternativeNames: ["Steve Wozniak", "Stephen Wozniak", "Woz", "Stephen Gary Wozniak"],
                 clue: "The engineer in the garage, wires and chips his canvas; a prankster behind the fruit's first bite.",
-                imageUrl: "images/steve_wozniak.jpg"
+                imageUrl: "images/Faceguessr 02/stevewozniak.jpg"
             }
         ]
     }
@@ -586,7 +586,7 @@ class FaceGuessrGame {
             shareString += answer.correct ? '🟩 ' : '🟥 ';
         });
         
-        shareString += `\n\nGuess 5 new faces daily - new theme every day!\nhttps://saleswrite.github.io/Faceguessr/`;
+        shareString += `\n\nGuess 5 faces daily - new theme every day!\nhttps://saleswrite.github.io/Faceguessr/`;
         
         this.shareTextarea.value = shareString;
         this.shareText.classList.remove('hidden');

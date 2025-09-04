@@ -1,0 +1,882 @@
+/* ===== DAILY GAME UI TEMPLATE STYLES ===== */
+/* Based on FaceGuessr design patterns - Reusable for all daily games */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+    background-color: #121213;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ===== HEADER STYLES ===== */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.rules-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: none;
+    border: 1px solid #3a3a3c;
+    color: #d4d4d4;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.rules-btn:hover {
+    background-color: #3a3a3c;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #818384;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* ===== PROGRESS SECTION ===== */
+.progress-container {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #3a3a3c;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#progress-fill {
+    height: 100%;
+    background-color: #6aaa64;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.question-counter {
+    color: #818384;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ===== MAIN GAME AREA ===== */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-board {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+/* ===== CONTENT CONTAINER ===== */
+.content-container {
+    width: 100%;
+    max-width: 400px;
+    min-height: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid #3a3a3c;
+    background-color: #2a2a2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ===== CLUE CONTAINER ===== */
+.clue-container {
+    max-width: 400px;
+    text-align: center;
+    padding: 20px;
+    background-color: #1a1a1b;
+    border-radius: 8px;
+    border: 1px solid #3a3a3c;
+}
+
+.clue-container p {
+    font-size: 1.1rem;
+    font-style: italic;
+    line-height: 1.4;
+    color: #d4d4d4;
+}
+
+/* ===== INPUT CONTAINER ===== */
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 350px;
+}
+
+#game-input {
+    padding: 16px;
+    font-size: 1.1rem;
+    border: 2px solid #3a3a3c;
+    border-radius: 8px;
+    background-color: #1a1a1b;
+    color: #ffffff;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+#game-input:focus {
+    border-color: #6aaa64;
+}
+
+#game-input::placeholder {
+    color: #818384;
+}
+
+/* ===== BUTTON STYLES ===== */
+.button-container {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+#submit-btn, #next-btn {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #6aaa64;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex: 2;
+}
+
+#next-btn {
+    background-color: #538d4e;
+}
+
+#submit-btn:hover:not(:disabled), #next-btn:hover {
+    background-color: #5a9a54;
+}
+
+#next-btn:hover {
+    background-color: #4a7c47;
+}
+
+#submit-btn:disabled {
+    background-color: #3a3a3c;
+    cursor: not-allowed;
+}
+
+#previous-question-btn {
+    padding: 16px 24px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #787c7e;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex: 1;
+}
+
+#previous-question-btn:hover:not(:disabled) {
+    background-color: #6a6e70;
+}
+
+#previous-question-btn:disabled {
+    background-color: #3a3a3c;
+    cursor: not-allowed;
+}
+
+/* ===== FEEDBACK STYLES ===== */
+.feedback-container {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#feedback-message {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: 8px;
+    max-width: 100%;
+}
+
+#feedback-message.correct {
+    background-color: #6aaa64;
+    color: #ffffff;
+}
+
+#feedback-message.incorrect {
+    background-color: #c5554d;
+    color: #ffffff;
+}
+
+/* Shake animation for feedback messages */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-6px); }
+    20% { transform: translateX(6px); }
+    30% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    50% { transform: translateX(-3px); }
+    60% { transform: translateX(3px); }
+    70% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+    90% { transform: translateX(-1px); }
+}
+
+#feedback-message.shake {
+    animation: shake 0.6s ease-in-out;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #3a3a3c;
+    color: #818384;
+    font-size: 0.9rem;
+}
+
+/* ===== MODAL STYLES ===== */
+.results-screen, .how-to-play-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(18, 18, 19, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.how-to-play-modal {
+    background-color: rgba(18, 18, 19, 0.7);
+    align-items: flex-start;
+    padding-top: 15vh;
+    z-index: 2000;
+}
+
+.results-content, .how-to-play-content {
+    background-color: #1a1a1b;
+    border: 2px solid #3a3a3c;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: slideIn 0.3s ease-out;
+    position: relative;
+}
+
+.how-to-play-content {
+    border-radius: 8px;
+    padding: 32px;
+    width: 70%;
+    max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    text-align: left;
+    animation: modalSlide 0.2s ease-out;
+    box-shadow: 0 4px 23px 0 rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===== CLOSE BUTTON ===== */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #818384;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.close-btn:hover {
+    background-color: #3a3a3c;
+    color: #ffffff;
+}
+
+/* ===== RESULTS SCREEN SPECIFIC ===== */
+.results-content h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.final-score {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #6aaa64;
+    margin-bottom: 30px;
+}
+
+.score-breakdown {
+    margin-bottom: 30px;
+}
+
+.result-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px 8px 16px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background-color: #2a2a2c;
+    gap: 8px;
+}
+
+.result-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.result-item.correct {
+    border-left: 4px solid #6aaa64;
+}
+
+.result-item.incorrect {
+    border-left: 4px solid #787c7e;
+}
+
+.question-num {
+    font-weight: bold;
+    min-width: 30px;
+}
+
+.result-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.result-item.correct .result-icon {
+    color: #6aaa64;
+}
+
+.result-item.incorrect .result-icon {
+    color: #787c7e;
+}
+
+.answer-text {
+    flex: 1;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #d4d4d4;
+}
+
+.result-progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #3a3a3c;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.result-progress-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 2px;
+    animation: fillBar 0.8s ease-out;
+}
+
+.result-progress-fill.correct-fill {
+    background-color: #6aaa64;
+}
+
+.result-progress-fill.incorrect-fill {
+    background-color: #c5554d;
+}
+
+@keyframes fillBar {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* ===== SHARE SECTION ===== */
+.share-section {
+    margin-bottom: 20px;
+}
+
+#share-btn {
+    background-color: #6aaa64;
+    color: #ffffff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-bottom: 15px;
+}
+
+#share-btn:hover {
+    background-color: #5a9a54;
+}
+
+.share-text {
+    margin-top: 15px;
+}
+
+#share-textarea {
+    width: 100%;
+    background-color: #2a2a2c;
+    border: 1px solid #3a3a3c;
+    border-radius: 8px;
+    padding: 12px;
+    color: #ffffff;
+    font-family: monospace;
+    font-size: 0.9rem;
+    resize: none;
+    height: 120px;
+    margin-bottom: 10px;
+}
+
+#copy-btn {
+    background-color: #538d4e;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#copy-btn:hover {
+    background-color: #4a7c47;
+}
+
+.next-game-info {
+    color: #818384;
+    font-size: 0.9rem;
+}
+
+#countdown {
+    color: #6aaa64;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+/* ===== HOW TO PLAY MODAL SPECIFIC ===== */
+.how-to-play-content h2 {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+    color: #6aaa64;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+}
+
+.how-to-play-content .rules-intro {
+    color: #d4d4d4;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+    text-align: center;
+    font-style: italic;
+}
+
+.how-to-play-content .rules-section h3 {
+    color: #6aaa64;
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+}
+
+.how-to-play-content .rules-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+}
+
+.how-to-play-content .rules-list li {
+    color: #ffffff;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.how-to-play-content .rules-list li:before {
+    content: '•';
+    color: #6aaa64;
+    font-weight: bold;
+    font-size: 1.2rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.how-to-play-content .rules-list li:last-child {
+    margin-bottom: 0;
+}
+
+.how-to-play-content .rules-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #3a3a3c;
+}
+
+.how-to-play-content .rules-footer p {
+    color: #818384;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0;
+}
+
+/* ===== SUGGESTION DIALOG ===== */
+.suggestion-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(18, 18, 19, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2500;
+    backdrop-filter: blur(3px);
+}
+
+.suggestion-content {
+    background-color: #1a1a1b;
+    border: 2px solid #3a3a3c;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    animation: slideIn 0.2s ease-out;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 2500;
+    pointer-events: auto;
+}
+
+.suggestion-text {
+    color: #d4d4d4;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.suggested-answer {
+    color: #6aaa64;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+    padding: 12px;
+    background-color: #2a2a2c;
+    border-radius: 8px;
+    border: 1px solid #3a3a3c;
+}
+
+.suggestion-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.suggestion-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    min-width: 80px;
+    position: relative;
+    z-index: 2501;
+    pointer-events: auto;
+    outline: none;
+}
+
+.suggestion-btn:hover {
+    transform: translateY(-1px);
+}
+
+.yes-btn {
+    background-color: #6aaa64;
+    color: #ffffff;
+}
+
+.yes-btn:hover {
+    background-color: #5a9a54;
+}
+
+.no-btn {
+    background-color: #787c7e;
+    color: #ffffff;
+}
+
+.no-btn:hover {
+    background-color: #6a6e70;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.hidden {
+    display: none !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .rules-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 16px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .content-container {
+        min-height: 240px;
+    }
+    
+    .clue-container {
+        max-width: 100%;
+        padding: 16px;
+    }
+    
+    .clue-container p {
+        font-size: 1rem;
+    }
+    
+    .input-container {
+        max-width: 100%;
+    }
+    
+    .button-container {
+        gap: 8px;
+    }
+    
+    #previous-question-btn {
+        padding: 14px 16px;
+        font-size: 1rem;
+        flex: 1;
+    }
+    
+    #game-input, #submit-btn, #next-btn {
+        padding: 14px;
+        font-size: 1rem;
+    }
+    
+    #submit-btn, #next-btn {
+        flex: 2;
+    }
+    
+    #feedback-message {
+        font-size: 1.1rem;
+        padding: 14px 20px;
+    }
+    
+    .how-to-play-modal {
+        padding-top: 10vh;
+        align-items: flex-start;
+    }
+    
+    .how-to-play-content {
+        padding: 24px 20px;
+        width: 90%;
+        max-height: 80vh;
+    }
+    
+    .how-to-play-content h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .how-to-play-content .rules-intro {
+        font-size: 1rem;
+        margin-bottom: 25px;
+    }
+    
+    .how-to-play-content .rules-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+    
+    .how-to-play-content .rules-list li {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        padding-left: 20px;
+    }
+    
+    .suggestion-content {
+        padding: 25px 20px;
+        width: 95%;
+    }
+    
+    .suggestion-text {
+        font-size: 1rem;
+    }
+    
+    .suggested-answer {
+        font-size: 1.2rem;
+        padding: 10px;
+    }
+    
+    .suggestion-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .rules-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        border-radius: 14px;
+    }
+    
+    .content-container {
+        min-height: 200px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    #previous-question-btn, #submit-btn, #next-btn {
+        flex: none;
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+    }
+    
+    .how-to-play-modal {
+        padding-top: 5vh;
+    }
+    
+    .how-to-play-content {
+        padding: 20px 16px;
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .how-to-play-content h2 {
+        font-size: 1.6rem;
+    }
+    
+    .how-to-play-content .rules-intro {
+        font-size: 0.9rem;
+    }
+    
+    .how-to-play-content .rules-section h3 {
+        font-size: 1.1rem;
+    }
+    
+    .how-to-play-content .rules-list li {
+        font-size: 0.85rem;
+        padding-left: 18px;
+    }
+}

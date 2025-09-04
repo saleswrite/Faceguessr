@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FaceGuessr - Daily Historical Figure Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>{{GAME_TITLE}} - Daily {{GAME_TYPE}} Game</title>
+    <link rel="stylesheet" href="template-styles.css">
 </head>
 <body>
     <div class="container">
         <header>
             <button id="rules-btn" class="rules-btn">Rules</button>
-            <h1>FaceGuessr</h1>
-            <p class="subtitle">Today's Theme: <strong>Faces</strong></p>
+            <h1>{{GAME_TITLE}}</h1>
+            <p class="subtitle">Today's Theme: <strong>{{DEFAULT_THEME}}</strong></p>
             <div class="progress-container">
                 <div class="progress-bar">
                     <div id="progress-fill"></div>
@@ -24,28 +24,34 @@
 
         <main>
             <div class="game-board">
-                <div class="image-container">
-                    <img id="person-image" src="" alt="Historical figure" />
+                <!-- Main Game Content Area -->
+                <div class="content-container">
+                    <div id="game-content">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
                 </div>
                 
+                <!-- Clue/Hint Container -->
                 <div class="clue-container">
-                    <p id="cryptic-clue"></p>
+                    <p id="game-clue">{{DEFAULT_CLUE_TEXT}}</p>
                 </div>
 
-                <div class="guess-container">
+                <!-- Input Container -->
+                <div class="input-container">
                     <input 
                         type="text" 
-                        id="guess-input" 
-                        placeholder="Enter your guess..."
+                        id="game-input" 
+                        placeholder="{{INPUT_PLACEHOLDER}}"
                         maxlength="50"
                     />
                     <div class="button-container">
                         <button id="previous-question-btn" class="hidden">Previous</button>
-                        <button id="submit-btn">Submit Guess</button>
+                        <button id="submit-btn">{{SUBMIT_BUTTON_TEXT}}</button>
                         <button id="next-btn" class="hidden">Next Question</button>
                     </div>
                 </div>
 
+                <!-- Feedback Container -->
                 <div class="feedback-container">
                     <div id="feedback-message"></div>
                 </div>
@@ -63,7 +69,7 @@
                 </div>
             </div>
             
-            <!-- Review Navigation (shown after game completion) -->
+            <!-- Review Navigation -->
             <div id="review-nav" class="review-nav hidden">
                 <div class="review-controls">
                     <button id="prev-btn" class="nav-btn">‹ Previous</button>
@@ -76,9 +82,8 @@
             </div>
         </main>
 
-
         <footer>
-            <p>5 faces daily • Resets at midnight GMT • Score: <span id="current-score">0</span>/5</p>
+            <p>{{FOOTER_TEXT}} • Score: <span id="current-score">0</span>/5</p>
         </footer>
 
         <!-- How to Play Popup -->
@@ -87,16 +92,17 @@
                 <button id="close-how-to-play" class="close-btn">&times;</button>
                 <h2>How to Play</h2>
                 <div class="rules-explanation">
-                    <p class="rules-intro">Guess the 5 faces from today's theme using their photos and cryptic clues.</p>
+                    <p class="rules-intro">{{RULES_INTRO_TEXT}}</p>
                     
                     <div class="rules-section">
                         <h3>Game Rules</h3>
                         <ul class="rules-list">
-                            <li>Each day features a different theme (Business Leaders, Musicians, Athletes, etc.)</li>
-                            <li>You get <strong>one guess per face</strong> - make it count!</li>
-                            <li>Use the cryptic clue to help identify each person</li>
-                            <li>Correct answers show ✅, wrong answers show ❌</li>
-                            <li>Share your daily score with friends!</li>
+                            <!-- Rules will be dynamically populated -->
+                            <li>{{RULE_1}}</li>
+                            <li>{{RULE_2}}</li>
+                            <li>{{RULE_3}}</li>
+                            <li>{{RULE_4}}</li>
+                            <li>{{RULE_5}}</li>
                         </ul>
                     </div>
                     
@@ -132,6 +138,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="template-script.js"></script>
 </body>
 </html>
