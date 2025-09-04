@@ -125,6 +125,101 @@ class FaceGuessrGame {
         this.checkFirstVisit();
     }
 
+    async initializeGame() {
+        try {
+            // Show loading state
+            this.showLoadingState();
+            
+            // Load themes from Supabase
+            this.themes = await this.fetchThemesFromSupabase();
+            
+            // Hide loading state
+            this.hideLoadingState();
+            
+            // Now load today's game
+            this.loadTodaysGame();
+        } catch (error) {
+            console.error('Error initializing game:', error);
+            // Use fallback themes if Supabase fails
+            this.themes = fallbackThemes;
+            this.hideLoadingState();
+            this.loadTodaysGame();
+        }
+    }
+
+    showLoadingState() {
+        // You can customize this to show a loading spinner
+        if (this.crypticClue) {
+            this.crypticClue.textContent = 'Loading today\'s theme...';
+        }
+    }
+
+    hideLoadingState() {
+        // Clear loading message
+        if (this.crypticClue) {
+            this.crypticClue.textContent = '';
+        }
+    }
+
+    async fetchThemesFromSupabase() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('faces')
+                .select('*');
+            
+            if (error) {
+                console.error('Error fetching from Supabase:', error);
+                return fallbackThemes;
+            }
+
+            // Group faces by theme
+            const themeGroups = {};
+            data.forEach(face => {
+                const themeKey = face.theme;
+                if (!themeGroups[themeKey]) {
+                    themeGroups[themeKey] = {
+                        name: this.getThemeDisplayName(themeKey),
+                        figures: []
+                    };
+                }
+
+                // Parse alt_names JSON string to array
+                let alternativeNames = [face.name];
+                try {
+                    if (face.alt_names) {
+                        const altNames = JSON.parse(face.alt_names);
+                        alternativeNames = [face.name, ...altNames];
+                    }
+                } catch (e) {
+                    console.warn('Error parsing alt_names for', face.name, ':', e);
+                }
+
+                themeGroups[themeKey].figures.push({
+                    name: face.name,
+                    alternativeNames: alternativeNames,
+                    clue: face.clue || "Can you guess who this is?",
+                    imageUrl: face.url
+                });
+            });
+
+            return themeGroups;
+        } catch (error) {
+            console.error('Error connecting to Supabase:', error);
+            return fallbackThemes;
+        }
+    }
+
+    getThemeDisplayName(themeKey) {
+        const themeNames = {
+            'historical': 'Historical Faces',
+            'business': 'Business Faces', 
+            'tv_characters': 'TV Character Faces',
+            'musicians': 'Music Faces',
+            'athletes': 'Sports Faces'
+        };
+        return themeNames[themeKey] || `Theme ${themeKey}`;
+    }
+
     initializeElements() {
         this.personImage = document.getElementById('person-image');
         this.crypticClue = document.getElementById('cryptic-clue');
