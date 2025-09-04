@@ -1,4 +1,11 @@
-const themes = {
+// Initialize Supabase client
+const { createClient } = supabase;
+const supabaseUrl = window.SUPABASE_URL;
+const supabaseKey = window.SUPABASE_ANON;
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+// Fallback themes (keep for offline/error scenarios)
+const fallbackThemes = {
     1: {
         name: "Historical Faces",
         figures: [
@@ -119,9 +126,10 @@ class FaceGuessrGame {
         this.reviewMode = false;
         this.currentReviewIndex = 0;
         this.inGameReviewMode = false;
+        this.themes = null; // Will be loaded from Supabase
         this.initializeElements();
         this.setupEventListeners();
-        this.loadTodaysGame();
+        this.initializeGame();
         this.checkFirstVisit();
     }
 
@@ -323,6 +331,23 @@ class FaceGuessrGame {
         const gameKey = this.getTodayGMT().toISOString().split('T')[0];
         const savedGame = localStorage.getItem(`faceguessr_game_${gameKey}`);
         
+        // Check if we need to clear old data due to database migration
+        const dbVersion = localStorage.getItem('faceguessr_db_version');
+        if (dbVersion !== '2.0') {
+            // Clear all old game data
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('faceguessr_game_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            localStorage.setItem('faceguessr_db_version', '2.0');
+            // Proceed without saved game
+            this.generateDailyFigures();
+            this.updateUI();
+            this.displayCurrentQuestion();
+            return;
+        }
+        
         if (savedGame) {
             const gameData = JSON.parse(savedGame);
             this.score = gameData.score;
@@ -331,10 +356,15 @@ class FaceGuessrGame {
             this.dailyFigures = gameData.dailyFigures;
             
             // Set theme name for saved games
-            const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
-            const currentTheme = themes[dayNumber];
-            this.currentThemeName = currentTheme ? currentTheme.name : themes[1].name;
-            this.updateThemeSubtitle();
+            if (this.themes) {
+                const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
+                const themeKeys = Object.keys(this.themes);
+                const themeIndex = ((dayNumber - 1) % themeKeys.length);
+                const currentThemeKey = themeKeys[themeIndex];
+                const currentTheme = this.themes[currentThemeKey];
+                this.currentThemeName = currentTheme ? currentTheme.name : Object.values(this.themes)[0]?.name || 'Daily Faces';
+                this.updateThemeSubtitle();
+            }
             
             if (this.answers.length >= this.totalQuestions) {
                 this.showResults();
@@ -349,17 +379,33 @@ class FaceGuessrGame {
     }
 
     generateDailyFigures() {
+        if (!this.themes) {
+            console.error('Themes not loaded yet');
+            return;
+        }
+
         // Get current day number to determine theme
         const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
-        const currentTheme = themes[dayNumber];
+        const themeKeys = Object.keys(this.themes);
+        const themeIndex = ((dayNumber - 1) % themeKeys.length);
+        const currentThemeKey = themeKeys[themeIndex];
+        const currentTheme = this.themes[currentThemeKey];
         
-        if (currentTheme) {
+        if (currentTheme && currentTheme.figures && currentTheme.figures.length >= 5) {
             this.dailyFigures = [...currentTheme.figures];
             this.currentThemeName = currentTheme.name;
         } else {
-            // Fallback to theme 1 if day not found
-            this.dailyFigures = [...themes[1].figures];
-            this.currentThemeName = themes[1].name;
+            // Fallback to first available theme
+            const firstThemeKey = themeKeys[0];
+            const firstTheme = this.themes[firstThemeKey];
+            if (firstTheme) {
+                this.dailyFigures = [...firstTheme.figures];
+                this.currentThemeName = firstTheme.name;
+            } else {
+                // Ultimate fallback to hardcoded themes
+                this.dailyFigures = [...fallbackThemes[1].figures];
+                this.currentThemeName = fallbackThemes[1].name;
+            }
         }
         
         // Update the subtitle with current theme
