@@ -169,6 +169,24 @@ class FaceGuessrGame {
         }
     }
 
+    loadImageWithFallback(imageUrl, altText) {
+        // Create a placeholder image URL (you can customize this)
+        const placeholderUrl = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjZjNmNGY2Ii8+CjxwYXRoIGQ9Ik0xNDAgMTEwYzE2LjU2OSAwIDMwIDE3LjkwOSAzMCA0MHMtMTMuNDMxIDQwLTMwIDQwLTE0Mi0xNy45MDktNDBzMTMuNDMxLTQwIDMwLTQweiIgZmlsbD0iI2Q5ZGNlMSIvPgo8cGF0aCBkPSJNNzAgMjMwYzAtMzMuMTM3IDMxLjM0My02MCA3MC02MHM3MCAyNi44NjMgNzAgNjB2MjBINzB2LTIweiIgZmlsbD0iI2Q5ZGNlMSIvPgo8L3N2Zz4K';
+        
+        // Set the alt text
+        this.personImage.alt = altText;
+        
+        // Set up error handler before setting the src
+        this.personImage.onerror = () => {
+            console.warn(`Failed to load image: ${imageUrl}, using placeholder`);
+            this.personImage.src = placeholderUrl;
+            this.personImage.onerror = null; // Prevent infinite loop
+        };
+        
+        // Set the image source
+        this.personImage.src = imageUrl;
+    }
+
     async fetchThemesFromSupabase() {
         try {
             const { data, error } = await supabaseClient
@@ -206,7 +224,7 @@ class FaceGuessrGame {
                     name: face.name,
                     alternativeNames: alternativeNames,
                     clue: face.clue || "Can you guess who this is?",
-                    imageUrl: face.url
+                    imageUrl: face.image_url || face.url // Support both field names
                 });
             });
 
@@ -442,8 +460,7 @@ class FaceGuessrGame {
         }
 
         const currentFigure = this.dailyFigures[this.currentQuestionIndex];
-        this.personImage.src = currentFigure.imageUrl;
-        this.personImage.alt = `Person ${this.currentQuestionIndex + 1}`;
+        this.loadImageWithFallback(currentFigure.imageUrl, `Person ${this.currentQuestionIndex + 1}`);
         this.crypticClue.textContent = currentFigure.clue;
         
         // Reset input state
@@ -715,8 +732,7 @@ class FaceGuessrGame {
         const figure = this.dailyFigures[this.currentQuestionIndex];
         
         // Display the question
-        this.personImage.src = figure.imageUrl;
-        this.personImage.alt = `${figure.name} - Question ${this.currentQuestionIndex + 1}`;
+        this.loadImageWithFallback(figure.imageUrl, `${figure.name} - Question ${this.currentQuestionIndex + 1}`);
         this.crypticClue.textContent = figure.clue;
         
         // Show what was guessed and the result
@@ -874,8 +890,7 @@ class FaceGuessrGame {
         const reviewFigure = this.dailyFigures[this.currentReviewIndex];
         
         // Update the image and clue using original layout
-        this.personImage.src = reviewFigure.imageUrl;
-        this.personImage.alt = `${reviewFigure.name} - Question ${this.currentReviewIndex + 1}`;
+        this.loadImageWithFallback(reviewFigure.imageUrl, `${reviewFigure.name} - Question ${this.currentReviewIndex + 1}`);
         this.crypticClue.textContent = reviewFigure.clue;
         
         // Update progress bar to show review position
