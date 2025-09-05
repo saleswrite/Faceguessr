@@ -69,7 +69,7 @@ h1 {
     font-weight: bold;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
-    padding: 0 100px; /* Add padding instead of margin for better mobile handling */
+    padding: 0 90px; /* Reduced padding for better mobile handling */
 }
 
 /* Mobile responsiveness improvements for header */

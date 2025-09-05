@@ -296,11 +296,9 @@ class FaceGuessrGame {
                 .from('faces')
                 .select('*');
             
-            // Filter by difficulty and ensure same theme for both difficulties
+            // Filter by difficulty if specified
             if (difficulty) {
-                // Get current theme for the day
-                const currentThemeKey = this.getCurrentThemeKey();
-                query = query.eq('difficulty', difficulty).eq('theme', currentThemeKey);
+                query = query.eq('difficulty', difficulty);
             }
                 
             const { data, error } = await query;
@@ -502,14 +500,14 @@ class FaceGuessrGame {
         
         // Check if we need to clear old data due to database migration
         const dbVersion = localStorage.getItem('faceguessr_db_version');
-        if (dbVersion !== '2.4') {
+        if (dbVersion !== '2.5') {
             // Clear all old game data
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('faceguessr_game_')) {
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.setItem('faceguessr_db_version', '2.4');
+            localStorage.setItem('faceguessr_db_version', '2.5');
             // Proceed without saved game
             this.generateDailyFigures();
             this.updateUI();
