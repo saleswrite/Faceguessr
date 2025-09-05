@@ -668,8 +668,8 @@ footer {
     border-radius: 12px;
     padding: 30px;
     max-width: 400px;
-    width: 100%;
-    max-height: 90vh;
+    width: 90%;
+    max-height: 80vh;
     text-align: center;
     animation: slideIn 0.2s ease-out;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -741,17 +741,10 @@ footer {
 }
 
 @media (max-width: 600px) {
-    .suggestion-dialog {
-        padding: 15px;
-        align-items: center;
-        justify-content: center;
-    }
-    
     .suggestion-content {
         padding: 25px 20px;
-        width: 100%;
-        max-width: 85vw;
-        max-height: 60vh;
+        width: 85%;
+        max-width: 350px;
     }
     
     .suggestion-text {
@@ -778,17 +771,10 @@ footer {
 }
 
 @media (max-width: 480px) {
-    .suggestion-dialog {
-        padding: 10px;
-        align-items: center;
-        justify-content: center;
-    }
-    
     .suggestion-content {
         padding: 20px 15px;
-        max-width: 90vw;
-        max-height: 65vh;
-        border-radius: 8px;
+        width: 90%;
+        max-width: 300px;
     }
     
     .suggestion-text {
@@ -810,16 +796,10 @@ footer {
 }
 
 @media (max-width: 400px) {
-    .suggestion-dialog {
-        padding: 8px;
-        align-items: center;
-        justify-content: center;
-    }
-    
     .suggestion-content {
         padding: 18px 12px;
-        max-width: 95vw;
-        max-height: 70vh;
+        width: 95%;
+        max-width: 280px;
     }
     
     .suggestion-text {
