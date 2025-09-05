@@ -153,17 +153,44 @@
     <!-- Modal container for proper portal behavior -->
     <div id="fg-modal-container" style="display:none"></div>
 
-    <script>
-    // FaceGuessr Modal Implementation
+    <script type="module">
+    // Visual viewport centering helper (inline for simplicity)
+    function attachVisualViewportCentering(dialog) {
+      const node = typeof dialog === 'string' ? document.querySelector(dialog) : dialog;
+      if (!node) return () => {};
+
+      const vv = window.visualViewport;
+      if (!vv) return () => {}; // desktop fallback uses CSS translate
+
+      const center = () => {
+        const top = vv.offsetTop + (vv.height / 2);
+        const left = vv.offsetLeft + (vv.width / 2);
+        node.style.top = `${top}px`;
+        node.style.left = `${left}px`;
+        node.style.transform = 'translate(-50%, -50%)';
+      };
+
+      center();
+      const onChange = () => center();
+      vv.addEventListener('resize', onChange);
+      vv.addEventListener('scroll', onChange);
+
+      return () => {
+        vv.removeEventListener('resize', onChange);
+        vv.removeEventListener('scroll', onChange);
+      };
+    }
+
+    // FaceGuessr Modal Implementation with Visual Viewport
     (function(){
       const root = document.getElementById('fg-modal-container');
 
-      function lockScroll(lock) {
-        const de = document.documentElement;
-        if (lock) { de.style.overflow = 'hidden'; } else { de.style.overflow = ''; }
+      function lockScroll(lock){ 
+        const de = document.documentElement; 
+        de.style.overflow = lock ? 'hidden' : ''; 
       }
 
-      function html(suggestion) {
+      function tpl(suggestion){
         return `
           <div class="fg-modal-root" role="dialog" aria-modal="true" aria-labelledby="fg-dym-title">
             <div class="fg-modal-backdrop" data-close="1"></div>
@@ -178,12 +205,16 @@
           </div>`;
       }
 
-      window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }) {
+      window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }){
         root.style.display = 'block';
-        root.innerHTML = html(suggestion);
+        root.innerHTML = tpl(suggestion);
         lockScroll(true);
 
+        const dialog = root.querySelector('.fg-modal-dialog');
+        const disposeVV = attachVisualViewportCentering(dialog);
+
         const close = () => {
+          disposeVV && disposeVV();
           root.innerHTML = '';
           root.style.display = 'none';
           lockScroll(false);
@@ -195,7 +226,6 @@
           if (e.target.matches('[data-reject]')) { onReject?.(); close(); }
         }, { once: true });
 
-        // ESC key handler
         document.addEventListener('keydown', function esc(e){
           if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
         });
