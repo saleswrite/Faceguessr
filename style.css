@@ -648,18 +648,25 @@ footer {
 /* Suggestion Dialog */
 .suggestion-dialog {
     position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    max-width: 90vw;
+    background-color: rgba(18, 18, 19, 0.9);
+    z-index: 2500;
+    backdrop-filter: blur(3px);
+}
+
+.suggestion-dialog::before {
+    content: '';
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100vw;
-    height: 100vh;
     background-color: rgba(18, 18, 19, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2500;
-    backdrop-filter: blur(3px);
+    z-index: -1;
 }
 
 .suggestion-content {
@@ -667,8 +674,6 @@ footer {
     border: 2px solid #3a3a3c;
     border-radius: 12px;
     padding: 30px;
-    max-width: 400px;
-    width: 90%;
     text-align: center;
     animation: slideIn 0.2s ease-out;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -738,10 +743,13 @@ footer {
 
 /* Mobile responsive suggestion dialog */
 @media (max-width: 600px) {
+    .suggestion-dialog {
+        width: 320px;
+        max-width: 85vw;
+    }
+    
     .suggestion-content {
         padding: 25px 20px;
-        width: 85%;
-        max-width: 320px;
     }
     
     .suggestion-text {
@@ -762,10 +770,13 @@ footer {
 }
 
 @media (max-width: 400px) {
+    .suggestion-dialog {
+        width: 280px;
+        max-width: 95vw;
+    }
+    
     .suggestion-content {
         padding: 20px 15px;
-        width: 90%;
-        max-width: 280px;
     }
     
     .suggestion-text {

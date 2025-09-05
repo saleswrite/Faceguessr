@@ -869,9 +869,6 @@ class FaceGuessrGame {
         this.suggestedAnswer.textContent = suggestion;
         this.suggestionDialog.classList.remove('hidden');
         
-        // Prevent body scrolling while dialog is open
-        document.body.style.overflow = 'hidden';
-        
         // Disable input while waiting for response
         this.guessInput.disabled = true;
         this.submitBtn.disabled = true;
@@ -880,9 +877,6 @@ class FaceGuessrGame {
     acceptSuggestion() {
         this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
-        
-        // Restore body scrolling
-        document.body.style.overflow = '';
         
         // Process as correct answer with the suggested name
         this.processCorrectAnswer(this.currentSuggestion.suggestion, this.currentSuggestion.figure);
@@ -893,9 +887,6 @@ class FaceGuessrGame {
     rejectSuggestion() {
         this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
-        
-        // Restore body scrolling
-        document.body.style.overflow = '';
         
         // Process as incorrect answer with original guess
         this.processIncorrectAnswer(this.currentSuggestion.originalGuess, this.currentSuggestion.figure);
@@ -951,18 +942,6 @@ class FaceGuessrGame {
         }
     }
 
-    nextQuestion() {
-        this.currentQuestionIndex++;
-        this.updateUI();
-        
-        if (this.currentQuestionIndex >= this.totalQuestions) {
-            this.showResults();
-        } else {
-            this.displayCurrentQuestion();
-        }
-        
-        this.saveGame();
-    }
 
     previousQuestion() {
         // Only allow going back if we have answers to review
