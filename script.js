@@ -352,14 +352,14 @@ class FaceGuessrGame {
         
         // Check if we need to clear old data due to database migration
         const dbVersion = localStorage.getItem('faceguessr_db_version');
-        if (dbVersion !== '2.0') {
+        if (dbVersion !== '2.1') {
             // Clear all old game data
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('faceguessr_game_')) {
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.setItem('faceguessr_db_version', '2.0');
+            localStorage.setItem('faceguessr_db_version', '2.1');
             // Proceed without saved game
             this.generateDailyFigures();
             this.updateUI();
