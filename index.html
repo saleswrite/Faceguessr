@@ -150,17 +150,64 @@
         </div>
     </div>
 
-    <!-- Suggestion Dialog - positioned outside main container for proper modal behavior -->
-    <div id="suggestion-dialog" class="suggestion-dialog hidden">
-        <div class="suggestion-content">
-            <p class="suggestion-text">Did you mean:</p>
-            <p class="suggested-answer" id="suggested-answer"></p>
-            <div class="suggestion-buttons">
-                <button id="yes-btn" class="suggestion-btn yes-btn">Yes</button>
-                <button id="no-btn" class="suggestion-btn no-btn">No</button>
+    <!-- Modal container for proper portal behavior -->
+    <div id="fg-modal-container" style="display:none"></div>
+
+    <script>
+    // FaceGuessr Modal Implementation
+    (function(){
+      const root = document.getElementById('fg-modal-container');
+
+      function lockScroll(lock) {
+        const de = document.documentElement;
+        if (lock) { de.style.overflow = 'hidden'; } else { de.style.overflow = ''; }
+      }
+
+      function html(suggestion) {
+        return `
+          <div class="fg-modal-root" role="dialog" aria-modal="true" aria-labelledby="fg-dym-title">
+            <div class="fg-modal-backdrop" data-close="1"></div>
+            <div class="fg-modal-dialog">
+              <h2 id="fg-dym-title" class="fg-modal-title">Did you mean:</h2>
+              <div class="fg-modal-suggestion">${suggestion}</div>
+              <div class="fg-modal-actions">
+                <button class="fg-btn fg-btn-primary" data-accept="1">Yes</button>
+                <button class="fg-btn fg-btn-ghost" data-reject="1">No</button>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>`;
+      }
+
+      window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }) {
+        root.style.display = 'block';
+        root.innerHTML = html(suggestion);
+        lockScroll(true);
+
+        const close = () => {
+          root.innerHTML = '';
+          root.style.display = 'none';
+          lockScroll(false);
+        };
+
+        root.addEventListener('click', (e) => {
+          if (e.target.matches('[data-close]')) close();
+          if (e.target.matches('[data-accept]')) { onAccept?.(); close(); }
+          if (e.target.matches('[data-reject]')) { onReject?.(); close(); }
+        }, { once: true });
+
+        // ESC key handler
+        document.addEventListener('keydown', function esc(e){
+          if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+        });
+
+        // Focus first button
+        setTimeout(() => {
+          const firstBtn = root.querySelector('.fg-btn');
+          if (firstBtn) firstBtn.focus();
+        }, 50);
+      };
+    })();
+    </script>
 
     <script src="script.js"></script>
 </body>

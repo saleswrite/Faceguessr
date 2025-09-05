@@ -389,10 +389,6 @@ class FaceGuessrGame {
         this.shareTextarea = document.getElementById('share-textarea');
         this.copyBtn = document.getElementById('copy-btn');
         this.countdown = document.getElementById('countdown');
-        this.suggestionDialog = document.getElementById('suggestion-dialog');
-        this.suggestedAnswer = document.getElementById('suggested-answer');
-        this.yesBtn = document.getElementById('yes-btn');
-        this.noBtn = document.getElementById('no-btn');
         this.closeResultsBtn = document.getElementById('close-results');
         this.reviewNav = document.getElementById('review-nav');
         this.prevBtn = document.getElementById('prev-btn');
@@ -428,8 +424,6 @@ class FaceGuessrGame {
         });
         this.shareBtn.addEventListener('click', () => this.showShareText());
         this.copyBtn.addEventListener('click', () => this.copyToClipboard());
-        this.yesBtn.addEventListener('click', () => this.acceptSuggestion());
-        this.noBtn.addEventListener('click', () => this.rejectSuggestion());
         this.closeResultsBtn.addEventListener('click', () => this.closeResults());
         this.prevBtn.addEventListener('click', () => this.previousAnswer());
         this.nextBtnReview.addEventListener('click', () => this.nextAnswer());
@@ -634,7 +628,6 @@ class FaceGuessrGame {
         this.nextBtn.classList.add('hidden');
         this.feedbackMessage.textContent = '';
         this.feedbackMessage.className = '';
-        this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
         this.currentSuggestion = null;
     }
@@ -866,16 +859,19 @@ class FaceGuessrGame {
             figure: figure
         };
         
-        this.suggestedAnswer.textContent = suggestion;
-        this.suggestionDialog.classList.remove('hidden');
-        
         // Disable input while waiting for response
         this.guessInput.disabled = true;
         this.submitBtn.disabled = true;
+        
+        // Open the new modal
+        window.openDidYouMeanModal({
+            suggestion: suggestion,
+            onAccept: () => this.acceptSuggestion(),
+            onReject: () => this.rejectSuggestion()
+        });
     }
 
     acceptSuggestion() {
-        this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
         
         // Process as correct answer with the suggested name
@@ -885,7 +881,6 @@ class FaceGuessrGame {
     }
 
     rejectSuggestion() {
-        this.suggestionDialog.classList.add('hidden');
         this.awaitingSuggestionResponse = false;
         
         // Process as incorrect answer with original guess

@@ -645,152 +645,95 @@ footer {
     }
 }
 
-/* Suggestion Dialog */
-.suggestion-dialog {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background-color: rgba(18, 18, 19, 0.8) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 999999 !important;
-    margin: 0 !important;
-    padding: 20px !important;
-    box-sizing: border-box !important;
+/* FaceGuessr modal styles */
+.fg-modal-root { 
+    position: fixed; 
+    inset: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 16px; 
+    z-index: 2147483647; 
 }
 
-.suggestion-content {
-    background-color: #1a1a1b !important;
-    border: 2px solid #3a3a3c !important;
-    border-radius: 12px !important;
-    padding: 30px !important;
-    width: 400px !important;
-    max-width: calc(100vw - 40px) !important;
-    text-align: center !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    position: relative !important;
-    margin: 0 auto !important;
+.fg-modal-backdrop { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,.5); 
 }
 
-.suggestion-text {
-    color: #d4d4d4 !important;
-    font-size: 1.1rem !important;
-    margin-bottom: 10px !important;
+.fg-modal-dialog { 
+    position: relative; 
+    max-width: 520px; 
+    width: min(92vw, 520px); 
+    border-radius: 12px;
+    background: #1b1b1b; 
+    color: #fff; 
+    box-shadow: 0 10px 40px rgba(0,0,0,.6); 
+    padding: 20px; 
 }
 
-.suggested-answer {
-    color: #6aaa64 !important;
-    font-size: 1.3rem !important;
-    font-weight: bold !important;
-    margin-bottom: 25px !important;
-    padding: 12px !important;
-    background-color: #2a2a2c !important;
-    border-radius: 8px !important;
-    border: 1px solid #3a3a3c !important;
+.fg-modal-title { 
+    font-size: 18px; 
+    font-weight: 600; 
+    margin: 0 0 12px; 
+    text-align: center; 
 }
 
-.suggestion-buttons {
-    display: flex !important;
-    gap: 15px !important;
-    justify-content: center !important;
+.fg-modal-suggestion {
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #6aaa64;
+    padding: 12px;
+    background-color: #2a2a2c;
+    border-radius: 8px;
+    border: 1px solid #3a3a3c;
 }
 
-.suggestion-btn {
-    padding: 12px 24px !important;
-    font-size: 1rem !important;
-    font-weight: bold !important;
-    border: none !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    transition: background-color 0.2s ease, transform 0.1s ease !important;
-    min-width: 80px !important;
-    position: relative !important;
-    z-index: 999999 !important;
-    pointer-events: auto !important;
-    outline: none !important;
+.fg-modal-actions { 
+    display: flex; 
+    gap: 12px; 
+    justify-content: center; 
+    margin-top: 12px; 
 }
 
-.suggestion-btn:hover {
-    transform: translateY(-1px) !important;
+.fg-btn { 
+    padding: 10px 16px; 
+    border-radius: 8px; 
+    border: 0; 
+    cursor: pointer; 
+    font-weight: 600; 
+    min-width: 80px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.yes-btn {
-    background-color: #6aaa64 !important;
-    color: #ffffff !important;
+.fg-btn:hover {
+    transform: translateY(-1px);
 }
 
-.yes-btn:hover {
-    background-color: #5a9a54 !important;
+.fg-btn-primary { 
+    background: #3aa657; 
+    color: #fff; 
 }
 
-.no-btn {
-    background-color: #787c7e !important;
-    color: #ffffff !important;
+.fg-btn-primary:hover {
+    background: #2d8544;
 }
 
-.no-btn:hover {
-    background-color: #6a6e70 !important;
+.fg-btn-ghost { 
+    background: #2a2a2a; 
+    color: #fff; 
 }
 
-/* Mobile responsive suggestion dialog */
-@media (max-width: 600px) {
-    .suggestion-dialog {
-        padding: 15px !important;
-    }
-    
-    .suggestion-content {
-        width: 320px !important;
-        max-width: calc(100vw - 30px) !important;
-        padding: 25px 20px !important;
-    }
-    
-    .suggestion-text {
-        font-size: 1rem !important;
-    }
-    
-    .suggested-answer {
-        font-size: 1.2rem !important;
-        padding: 10px !important;
-        margin-bottom: 20px !important;
-    }
-    
-    .suggestion-btn {
-        padding: 12px 20px !important;
-        font-size: 0.9rem !important;
-        min-width: 70px !important;
-    }
+.fg-btn-ghost:hover {
+    background: #3a3a3a;
 }
 
-@media (max-width: 400px) {
-    .suggestion-dialog {
-        padding: 10px !important;
-    }
-    
-    .suggestion-content {
-        width: 280px !important;
-        max-width: calc(100vw - 20px) !important;
-        padding: 20px 15px !important;
-    }
-    
-    .suggestion-text {
-        font-size: 0.9rem !important;
-    }
-    
-    .suggested-answer {
-        font-size: 1rem !important;
-        padding: 8px !important;
-        margin-bottom: 15px !important;
-    }
-    
-    .suggestion-btn {
-        padding: 10px 16px !important;
-        font-size: 0.85rem !important;
-        min-width: 60px !important;
+@media (min-width: 768px) {
+    .fg-modal-dialog { 
+        padding: 24px; 
     }
 }
 
