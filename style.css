@@ -650,6 +650,8 @@ footer {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100vw;
     height: 100vh;
     background-color: rgba(18, 18, 19, 0.8);
@@ -658,8 +660,6 @@ footer {
     justify-content: center;
     z-index: 2500;
     backdrop-filter: blur(3px);
-    padding: 20px;
-    box-sizing: border-box;
 }
 
 .suggestion-content {
@@ -669,15 +669,11 @@ footer {
     padding: 30px;
     max-width: 400px;
     width: 90%;
-    max-height: 80vh;
     text-align: center;
     animation: slideIn 0.2s ease-out;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     position: relative;
     z-index: 2500;
-    pointer-events: auto;
-    overflow-y: auto;
-    box-sizing: border-box;
 }
 
 .suggestion-text {
@@ -740,11 +736,12 @@ footer {
     background-color: #6a6e70;
 }
 
+/* Mobile responsive suggestion dialog */
 @media (max-width: 600px) {
     .suggestion-content {
         padding: 25px 20px;
         width: 85%;
-        max-width: 350px;
+        max-width: 320px;
     }
     
     .suggestion-text {
@@ -755,8 +752,6 @@ footer {
         font-size: 1.2rem;
         padding: 10px;
         margin-bottom: 20px;
-        word-break: break-word;
-        line-height: 1.2;
     }
     
     .suggestion-btn {
@@ -764,41 +759,12 @@ footer {
         font-size: 0.9rem;
         min-width: 70px;
     }
-    
-    .suggestion-buttons {
-        gap: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .suggestion-content {
-        padding: 20px 15px;
-        width: 90%;
-        max-width: 300px;
-    }
-    
-    .suggestion-text {
-        font-size: 0.95rem;
-        margin-bottom: 8px;
-    }
-    
-    .suggested-answer {
-        font-size: 1.1rem;
-        padding: 8px;
-        margin-bottom: 18px;
-    }
-    
-    .suggestion-btn {
-        padding: 10px 16px;
-        font-size: 0.85rem;
-        min-width: 60px;
-    }
 }
 
 @media (max-width: 400px) {
     .suggestion-content {
-        padding: 18px 12px;
-        width: 95%;
+        padding: 20px 15px;
+        width: 90%;
         max-width: 280px;
     }
     
@@ -808,14 +774,14 @@ footer {
     
     .suggested-answer {
         font-size: 1rem;
-        padding: 6px;
+        padding: 8px;
         margin-bottom: 15px;
     }
     
     .suggestion-btn {
-        padding: 8px 14px;
-        font-size: 0.8rem;
-        min-width: 55px;
+        padding: 10px 16px;
+        font-size: 0.85rem;
+        min-width: 60px;
     }
 }
 
