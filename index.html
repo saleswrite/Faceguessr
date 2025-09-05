@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FaceGuessr - Daily Face Guessing Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         window.SUPABASE_URL = 'https://ezozxjzkxawdvaktrmgd.supabase.co';
@@ -150,106 +152,82 @@
         </div>
     </div>
 
-    <script>
-    // ULTRA SIMPLE TEST MODAL - INLINE STYLES ONLY
-    window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }){
-      // Remove any existing modal
-      const existing = document.getElementById('test-modal');
-      if (existing) existing.remove();
-      
-      // Create modal with inline styles to bypass ALL CSS
-      const modal = document.createElement('div');
-      modal.id = 'test-modal';
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 999999;
-      `;
-      
-      modal.innerHTML = \`
-        <div style="
-          background: #1b1b1b;
-          color: white;
-          padding: 30px;
-          border-radius: 12px;
-          text-align: center;
-          max-width: 400px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        ">
-          <h2 style="margin: 0 0 15px 0; font-size: 18px;">Did you mean:</h2>
-          <div style="
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #6aaa64;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: #2a2a2c;
-            border-radius: 8px;
-          ">\${suggestion}</div>
-          <div style="display: flex; gap: 12px; justify-content: center;">
-            <button id="modal-yes" style="
-              background: #3aa657;
-              color: white;
-              border: 0;
+    <!-- Bootstrap Modal for "Did you mean" -->
+    <div class="modal fade" id="didYouMeanModal" tabindex="-1" aria-labelledby="didYouMeanModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1b1b1b; border: 2px solid #3a3a3c; color: #ffffff;">
+          <div class="modal-header border-0" style="padding-bottom: 0;">
+            <h5 class="modal-title w-100 text-center" id="didYouMeanModalLabel" style="color: #ffffff;">Did you mean:</h5>
+          </div>
+          <div class="modal-body text-center">
+            <div id="suggestion-text" style="
+              font-size: 1.2rem;
+              font-weight: bold;
+              color: #6aaa64;
+              padding: 12px;
+              background-color: #2a2a2c;
+              border-radius: 8px;
+              border: 1px solid #3a3a3c;
+              margin-bottom: 20px;
+            "></div>
+          </div>
+          <div class="modal-footer border-0 justify-content-center">
+            <button type="button" class="btn" id="acceptBtn" style="
+              background-color: #3aa657;
+              color: #ffffff;
+              border: none;
               padding: 10px 20px;
               border-radius: 8px;
-              cursor: pointer;
               font-weight: 600;
+              min-width: 80px;
             ">Yes</button>
-            <button id="modal-no" style="
-              background: #666;
-              color: white;
-              border: 0;
+            <button type="button" class="btn" id="rejectBtn" style="
+              background-color: #666666;
+              color: #ffffff;
+              border: none;
               padding: 10px 20px;
               border-radius: 8px;
-              cursor: pointer;
               font-weight: 600;
+              min-width: 80px;
             ">No</button>
           </div>
         </div>
-      \`;
+      </div>
+    </div>
+
+    <script>
+    // Bootstrap Modal Implementation for "Did you mean"
+    window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }) {
+      // Set the suggestion text
+      document.getElementById('suggestion-text').textContent = suggestion;
       
-      // Add to body
-      document.body.appendChild(modal);
+      // Get the Bootstrap modal instance
+      const modalElement = document.getElementById('didYouMeanModal');
+      const modal = new bootstrap.Modal(modalElement);
       
-      // Event handlers
-      const close = () => {
-        modal.remove();
-        document.documentElement.style.overflow = '';
-      };
+      // Clear any existing event listeners
+      const acceptBtn = document.getElementById('acceptBtn');
+      const rejectBtn = document.getElementById('rejectBtn');
       
-      document.getElementById('modal-yes').onclick = () => {
+      // Clone buttons to remove existing listeners
+      const newAcceptBtn = acceptBtn.cloneNode(true);
+      const newRejectBtn = rejectBtn.cloneNode(true);
+      acceptBtn.parentNode.replaceChild(newAcceptBtn, acceptBtn);
+      rejectBtn.parentNode.replaceChild(newRejectBtn, rejectBtn);
+      
+      // Add new event listeners
+      newAcceptBtn.addEventListener('click', () => {
         onAccept?.();
-        close();
-      };
+        modal.hide();
+      });
       
-      document.getElementById('modal-no').onclick = () => {
+      newRejectBtn.addEventListener('click', () => {
         onReject?.();
-        close();
-      };
+        modal.hide();
+      });
       
-      modal.onclick = (e) => {
-        if (e.target === modal) close();
-      };
-      
-      // Lock scroll
-      document.documentElement.style.overflow = 'hidden';
-      
-      // ESC key
-      const escHandler = (e) => {
-        if (e.key === 'Escape') {
-          close();
-          document.removeEventListener('keydown', escHandler);
-        }
-      };
-      document.addEventListener('keydown', escHandler);
+      // Show the modal
+      modal.show();
     };
     </script>
 
