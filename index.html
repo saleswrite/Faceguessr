@@ -55,18 +55,6 @@
                 <div class="feedback-container">
                     <div id="feedback-message"></div>
                 </div>
-                
-                <!-- Suggestion Dialog -->
-                <div id="suggestion-dialog" class="suggestion-dialog hidden">
-                    <div class="suggestion-content">
-                        <p class="suggestion-text">Did you mean:</p>
-                        <p class="suggested-answer" id="suggested-answer"></p>
-                        <div class="suggestion-buttons">
-                            <button id="yes-btn" class="suggestion-btn yes-btn">Yes</button>
-                            <button id="no-btn" class="suggestion-btn no-btn">No</button>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <!-- Review Navigation (shown after game completion) -->
@@ -158,6 +146,18 @@
                 <div class="next-game-info">
                     <p>New theme in: <span id="countdown"></span></p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggestion Dialog - positioned outside main container for proper modal behavior -->
+    <div id="suggestion-dialog" class="suggestion-dialog hidden">
+        <div class="suggestion-content">
+            <p class="suggestion-text">Did you mean:</p>
+            <p class="suggested-answer" id="suggested-answer"></p>
+            <div class="suggestion-buttons">
+                <button id="yes-btn" class="suggestion-btn yes-btn">Yes</button>
+                <button id="no-btn" class="suggestion-btn no-btn">No</button>
             </div>
         </div>
     </div>
