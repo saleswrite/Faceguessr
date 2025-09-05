@@ -150,62 +150,107 @@
         </div>
     </div>
 
-    <!-- Modal container for proper portal behavior -->
-    <div id="fg-modal-container" style="display:none"></div>
-
     <script>
-    // BULLETPROOF Modal Implementation - NO VISUAL VIEWPORT COMPLEXITY
-    (function(){
-      const root = document.getElementById('fg-modal-container');
-
-      function lockScroll(lock){ 
-        const de = document.documentElement; 
-        de.style.overflow = lock ? 'hidden' : ''; 
-      }
-
-      function tpl(suggestion){
-        return `
-          <div class="fg-modal-root" role="dialog" aria-modal="true" aria-labelledby="fg-dym-title">
-            <div class="fg-modal-backdrop" data-close="1"></div>
-            <div class="fg-modal-dialog">
-              <h2 id="fg-dym-title" class="fg-modal-title">Did you mean:</h2>
-              <div class="fg-modal-suggestion">${suggestion}</div>
-              <div class="fg-modal-actions">
-                <button class="fg-btn fg-btn-primary" data-accept="1">Yes</button>
-                <button class="fg-btn fg-btn-ghost" data-reject="1">No</button>
-              </div>
-            </div>
-          </div>`;
-      }
-
-      window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }){
-        root.style.display = 'block';
-        root.innerHTML = tpl(suggestion);
-        lockScroll(true);
-
-        const close = () => {
-          root.innerHTML = '';
-          root.style.display = 'none';
-          lockScroll(false);
-        };
-
-        root.addEventListener('click', (e) => {
-          if (e.target.matches('[data-close]')) close();
-          if (e.target.matches('[data-accept]')) { onAccept?.(); close(); }
-          if (e.target.matches('[data-reject]')) { onReject?.(); close(); }
-        }, { once: true });
-
-        document.addEventListener('keydown', function esc(e){
-          if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
-        });
-
-        // Focus first button
-        setTimeout(() => {
-          const firstBtn = root.querySelector('.fg-btn');
-          if (firstBtn) firstBtn.focus();
-        }, 50);
+    // ULTRA SIMPLE TEST MODAL - INLINE STYLES ONLY
+    window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }){
+      // Remove any existing modal
+      const existing = document.getElementById('test-modal');
+      if (existing) existing.remove();
+      
+      // Create modal with inline styles to bypass ALL CSS
+      const modal = document.createElement('div');
+      modal.id = 'test-modal';
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+      `;
+      
+      modal.innerHTML = \`
+        <div style="
+          background: #1b1b1b;
+          color: white;
+          padding: 30px;
+          border-radius: 12px;
+          text-align: center;
+          max-width: 400px;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        ">
+          <h2 style="margin: 0 0 15px 0; font-size: 18px;">Did you mean:</h2>
+          <div style="
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6aaa64;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #2a2a2c;
+            border-radius: 8px;
+          ">\${suggestion}</div>
+          <div style="display: flex; gap: 12px; justify-content: center;">
+            <button id="modal-yes" style="
+              background: #3aa657;
+              color: white;
+              border: 0;
+              padding: 10px 20px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-weight: 600;
+            ">Yes</button>
+            <button id="modal-no" style="
+              background: #666;
+              color: white;
+              border: 0;
+              padding: 10px 20px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-weight: 600;
+            ">No</button>
+          </div>
+        </div>
+      \`;
+      
+      // Add to body
+      document.body.appendChild(modal);
+      
+      // Event handlers
+      const close = () => {
+        modal.remove();
+        document.documentElement.style.overflow = '';
       };
-    })();
+      
+      document.getElementById('modal-yes').onclick = () => {
+        onAccept?.();
+        close();
+      };
+      
+      document.getElementById('modal-no').onclick = () => {
+        onReject?.();
+        close();
+      };
+      
+      modal.onclick = (e) => {
+        if (e.target === modal) close();
+      };
+      
+      // Lock scroll
+      document.documentElement.style.overflow = 'hidden';
+      
+      // ESC key
+      const escHandler = (e) => {
+        if (e.key === 'Escape') {
+          close();
+          document.removeEventListener('keydown', escHandler);
+        }
+      };
+      document.addEventListener('keydown', escHandler);
+    };
     </script>
 
     <script src="script.js"></script>
