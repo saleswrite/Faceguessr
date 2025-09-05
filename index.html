@@ -98,6 +98,7 @@
                         <h3>Game Rules</h3>
                         <ul class="rules-list">
                             <li>Each day features a different theme (Business Leaders, Musicians, Athletes, etc.)</li>
+                            <li>Choose your difficulty: Easy or Hard</li>
                             <li>You get <strong>one guess per face</strong> - make it count!</li>
                             <li>Use the cryptic clue to help identify each person</li>
                             <li>Correct answers show ✅, wrong answers show ❌</li>
@@ -108,6 +109,29 @@
                     <div class="rules-footer">
                         <p>New puzzles daily at midnight GMT • Come back tomorrow for a fresh challenge!</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Difficulty Selection Modal -->
+        <div id="difficulty-modal" class="difficulty-modal hidden">
+            <div class="difficulty-content">
+                <h2>Choose Your Difficulty</h2>
+                <p class="difficulty-description">Select how challenging you want today's faces to be:</p>
+                
+                <div class="difficulty-buttons">
+                    <button id="easy-btn" class="difficulty-btn easy-btn">
+                        <span class="difficulty-title">Easy</span>
+                        <span class="difficulty-desc">More recognizable faces</span>
+                    </button>
+                    <button id="hard-btn" class="difficulty-btn hard-btn">
+                        <span class="difficulty-title">Hard</span>
+                        <span class="difficulty-desc">More challenging faces</span>
+                    </button>
+                </div>
+                
+                <div class="difficulty-options">
+                    <button id="switch-difficulty-btn" class="switch-difficulty-btn hidden">Try Other Difficulty</button>
                 </div>
             </div>
         </div>

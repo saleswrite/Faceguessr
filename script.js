@@ -127,6 +127,8 @@ class FaceGuessrGame {
         this.currentReviewIndex = 0;
         this.inGameReviewMode = false;
         this.themes = null; // Will be loaded from Supabase
+        this.selectedDifficulty = null; // 'easy' or 'hard'
+        this.difficultySelected = false;
         this.initializeElements();
         this.setupEventListeners();
         this.initializeGame();
@@ -138,21 +140,66 @@ class FaceGuessrGame {
             // Show loading state
             this.showLoadingState();
             
-            // Load themes from Supabase
+            // Load themes from Supabase without difficulty filter initially
             this.themes = await this.fetchThemesFromSupabase();
             
             // Hide loading state
             this.hideLoadingState();
             
-            // Now load today's game
-            this.loadTodaysGame();
+            // Check if user has selected difficulty or completed game today
+            this.checkDifficultySelection();
         } catch (error) {
             console.error('Error initializing game:', error);
             // Use fallback themes if Supabase fails
             this.themes = fallbackThemes;
             this.hideLoadingState();
-            this.loadTodaysGame();
+            this.checkDifficultySelection();
         }
+    }
+
+    checkDifficultySelection() {
+        const gameKey = this.getTodayGMT().toISOString().split('T')[0];
+        const easyGame = localStorage.getItem(`faceguessr_game_${gameKey}_easy`);
+        const hardGame = localStorage.getItem(`faceguessr_game_${gameKey}_hard`);
+        
+        if (easyGame || hardGame) {
+            // User has played at least one difficulty today
+            this.loadTodaysGame();
+        } else {
+            // Show difficulty selection
+            this.showDifficultySelection();
+        }
+    }
+
+    showDifficultySelection() {
+        this.difficultyModal.classList.remove('hidden');
+        
+        // Check if user has completed other difficulty
+        const gameKey = this.getTodayGMT().toISOString().split('T')[0];
+        const easyGame = localStorage.getItem(`faceguessr_game_${gameKey}_easy`);
+        const hardGame = localStorage.getItem(`faceguessr_game_${gameKey}_hard`);
+        
+        if (easyGame || hardGame) {
+            this.switchDifficultyBtn.classList.remove('hidden');
+        }
+    }
+
+    hideDifficultySelection() {
+        this.difficultyModal.classList.add('hidden');
+    }
+
+    async selectDifficulty(difficulty) {
+        this.selectedDifficulty = difficulty;
+        this.difficultySelected = true;
+        this.hideDifficultySelection();
+        
+        // Load themes with difficulty filter
+        this.showLoadingState();
+        this.themes = await this.fetchThemesFromSupabase(difficulty);
+        this.hideLoadingState();
+        
+        // Load today's game with selected difficulty
+        this.loadTodaysGame();
     }
 
     showLoadingState() {
@@ -187,11 +234,18 @@ class FaceGuessrGame {
         this.personImage.src = imageUrl;
     }
 
-    async fetchThemesFromSupabase() {
+    async fetchThemesFromSupabase(difficulty = null) {
         try {
-            const { data, error } = await supabaseClient
+            let query = supabaseClient
                 .from('faces')
                 .select('*');
+            
+            // Filter by difficulty if specified
+            if (difficulty) {
+                query = query.eq('difficulty', difficulty);
+            }
+                
+            const { data, error } = await query;
             
             if (error) {
                 console.error('Error fetching from Supabase:', error);
@@ -281,6 +335,10 @@ class FaceGuessrGame {
         this.closeHowToPlayBtn = document.getElementById('close-how-to-play');
         this.rulesBtn = document.getElementById('rules-btn');
         this.subtitle = document.querySelector('.subtitle');
+        this.difficultyModal = document.getElementById('difficulty-modal');
+        this.easyBtn = document.getElementById('easy-btn');
+        this.hardBtn = document.getElementById('hard-btn');
+        this.switchDifficultyBtn = document.getElementById('switch-difficulty-btn');
     }
 
     setupEventListeners() {
@@ -309,6 +367,9 @@ class FaceGuessrGame {
         this.showResultsBtn.addEventListener('click', () => this.showResults());
         this.closeHowToPlayBtn.addEventListener('click', () => this.closeHowToPlay());
         this.rulesBtn.addEventListener('click', () => this.showHowToPlay());
+        this.easyBtn.addEventListener('click', () => this.selectDifficulty('easy'));
+        this.hardBtn.addEventListener('click', () => this.selectDifficulty('hard'));
+        this.switchDifficultyBtn.addEventListener('click', () => this.showDifficultySelection());
         
         this.guessInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -348,18 +409,35 @@ class FaceGuessrGame {
 
     loadTodaysGame() {
         const gameKey = this.getTodayGMT().toISOString().split('T')[0];
-        const savedGame = localStorage.getItem(`faceguessr_game_${gameKey}`);
+        
+        // Determine which difficulty to load
+        if (!this.selectedDifficulty) {
+            // Check what games exist
+            const easyGame = localStorage.getItem(`faceguessr_game_${gameKey}_easy`);
+            const hardGame = localStorage.getItem(`faceguessr_game_${gameKey}_hard`);
+            
+            if (easyGame && !hardGame) {
+                this.selectedDifficulty = 'easy';
+            } else if (hardGame && !easyGame) {
+                this.selectedDifficulty = 'hard';
+            } else if (easyGame && hardGame) {
+                // Both completed, show easy by default
+                this.selectedDifficulty = 'easy';
+            }
+        }
+        
+        const savedGame = localStorage.getItem(`faceguessr_game_${gameKey}_${this.selectedDifficulty}`);
         
         // Check if we need to clear old data due to database migration
         const dbVersion = localStorage.getItem('faceguessr_db_version');
-        if (dbVersion !== '2.1') {
+        if (dbVersion !== '2.2') {
             // Clear all old game data
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('faceguessr_game_')) {
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.setItem('faceguessr_db_version', '2.1');
+            localStorage.setItem('faceguessr_db_version', '2.2');
             // Proceed without saved game
             this.generateDailyFigures();
             this.updateUI();
@@ -541,7 +619,8 @@ class FaceGuessrGame {
                     if (nameWord.length >= 3 && guessWord.length >= 3) {
                         const wordDistance = this.levenshteinDistance(guessWord, nameWord);
                         const wordSimilarity = 1 - (wordDistance / Math.max(guessWord.length, nameWord.length));
-                        if (wordSimilarity > 0.75 && !foundPartialMatch) {
+                        // More generous partial matching - 65% similarity
+                        if (wordSimilarity > 0.65 && !foundPartialMatch) {
                             bestMatch = name;
                             foundPartialMatch = true;
                         }
@@ -549,14 +628,36 @@ class FaceGuessrGame {
                 });
             });
             
-            // Full name comparison with more generous threshold
+            // Check for common letter swaps and typos
+            if (!foundPartialMatch) {
+                const hasCommonTypo = this.hasCommonTypo(normalizedGuess, normalizedName);
+                if (hasCommonTypo) {
+                    bestMatch = name;
+                    foundPartialMatch = true;
+                }
+            }
+            
+            // Full name comparison with very generous threshold for close spellings
             const distance = this.levenshteinDistance(normalizedGuess, normalizedName);
             const similarity = 1 - (distance / Math.max(normalizedGuess.length, normalizedName.length));
             
-            // More generous matching: similarity > 60% and distance <= 4, or very short names
-            const isShortName = Math.min(normalizedGuess.length, normalizedName.length) <= 6;
-            const threshold = isShortName ? 0.5 : 0.6;
-            const maxDistance = isShortName ? 2 : 4;
+            // Very generous matching for close spellings
+            const nameLength = Math.max(normalizedGuess.length, normalizedName.length);
+            let threshold, maxDistance;
+            
+            if (nameLength <= 5) {
+                // Very short names: allow 1-2 character differences
+                threshold = 0.4;
+                maxDistance = 2;
+            } else if (nameLength <= 8) {
+                // Short-medium names: allow 2-3 character differences
+                threshold = 0.5;
+                maxDistance = 3;
+            } else {
+                // Longer names: allow up to 4-5 character differences
+                threshold = 0.55;
+                maxDistance = Math.min(5, Math.floor(nameLength * 0.4));
+            }
             
             if (similarity > threshold && distance <= maxDistance && similarity > bestSimilarity) {
                 bestMatch = name;
@@ -566,6 +667,45 @@ class FaceGuessrGame {
         });
         
         return bestMatch;
+    }
+
+    // Check for common typing mistakes and letter swaps
+    hasCommonTypo(guess, name) {
+        const minLength = Math.min(guess.length, name.length);
+        const maxLength = Math.max(guess.length, name.length);
+        
+        // Don't check very short strings
+        if (minLength < 3) return false;
+        
+        // Allow for 1 character difference if lengths are similar
+        if (Math.abs(guess.length - name.length) <= 1 && minLength >= 4) {
+            let differences = 0;
+            const shorter = guess.length <= name.length ? guess : name;
+            const longer = guess.length > name.length ? guess : name;
+            
+            for (let i = 0; i < shorter.length; i++) {
+                if (shorter[i] !== longer[i]) {
+                    differences++;
+                    if (differences > 1) return false;
+                }
+            }
+            return true;
+        }
+        
+        // Check for adjacent letter swaps (e.g., "teh" for "the")
+        if (guess.length === name.length && guess.length >= 3) {
+            for (let i = 0; i < guess.length - 1; i++) {
+                const swapped = guess.slice(0, i) + guess[i + 1] + guess[i] + guess.slice(i + 2);
+                if (swapped === name) return true;
+            }
+        }
+        
+        // Check for double letter typos (e.g., "allan" for "alan")
+        const withoutDoubles1 = guess.replace(/(.)\1+/g, '$1');
+        const withoutDoubles2 = name.replace(/(.)\1+/g, '$1');
+        if (withoutDoubles1 === withoutDoubles2) return true;
+        
+        return false;
     }
 
     handleGuess() {
@@ -812,7 +952,10 @@ class FaceGuessrGame {
         const dayNumber = Math.max(1, daysSinceEpoch + 1);
         const formattedDayNumber = dayNumber.toString().padStart(2, '0');
         
-        let shareString = `FaceGuessr ${formattedDayNumber} ${this.score}/5\n\n`;
+        const difficultyEmoji = this.selectedDifficulty === 'easy' ? '🟢' : '🔴';
+        const difficultyText = this.selectedDifficulty === 'easy' ? 'Easy' : 'Hard';
+        
+        let shareString = `FaceGuessr ${formattedDayNumber} ${this.score}/5 ${difficultyEmoji} ${difficultyText}\n\n`;
         
         this.answers.forEach((answer) => {
             shareString += answer.correct ? '🟩 ' : '🟥 ';
@@ -875,9 +1018,10 @@ class FaceGuessrGame {
             score: this.score,
             answers: this.answers,
             currentQuestionIndex: this.currentQuestionIndex,
-            dailyFigures: this.dailyFigures
+            dailyFigures: this.dailyFigures,
+            difficulty: this.selectedDifficulty
         };
-        localStorage.setItem(`faceguessr_game_${gameKey}`, JSON.stringify(gameData));
+        localStorage.setItem(`faceguessr_game_${gameKey}_${this.selectedDifficulty}`, JSON.stringify(gameData));
     }
 
     closeResults() {
@@ -997,6 +1141,15 @@ class FaceGuessrGame {
 
     closeHowToPlay() {
         this.howToPlayModal.classList.add('hidden');
+        
+        // If this was a first visit and no difficulty selected, show difficulty selection
+        const gameKey = this.getTodayGMT().toISOString().split('T')[0];
+        const easyGame = localStorage.getItem(`faceguessr_game_${gameKey}_easy`);
+        const hardGame = localStorage.getItem(`faceguessr_game_${gameKey}_hard`);
+        
+        if (!easyGame && !hardGame && !this.difficultySelected) {
+            this.showDifficultySelection();
+        }
     }
 
     checkFirstVisit() {
