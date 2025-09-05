@@ -296,11 +296,9 @@ class FaceGuessrGame {
                 .from('faces')
                 .select('*');
             
-            // Filter by difficulty and ensure same theme for both difficulties
+            // Filter by difficulty if specified
             if (difficulty) {
-                // Get current theme for the day
-                const currentThemeKey = this.getCurrentThemeKey();
-                query = query.eq('difficulty', difficulty).eq('theme', currentThemeKey);
+                query = query.eq('difficulty', difficulty);
             }
                 
             const { data, error } = await query;
@@ -502,14 +500,14 @@ class FaceGuessrGame {
         
         // Check if we need to clear old data due to database migration
         const dbVersion = localStorage.getItem('faceguessr_db_version');
-        if (dbVersion !== '2.2') {
+        if (dbVersion !== '2.3') {
             // Clear all old game data
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('faceguessr_game_')) {
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.setItem('faceguessr_db_version', '2.2');
+            localStorage.setItem('faceguessr_db_version', '2.3');
             // Proceed without saved game
             this.generateDailyFigures();
             this.updateUI();
@@ -526,11 +524,11 @@ class FaceGuessrGame {
             
             // Set theme name for saved games
             if (this.themes) {
-                // Use the current theme key for consistency
-                let currentThemeKey = this.getCurrentThemeKey();
+                // Prioritize 'tv_characters' theme
+                let currentThemeKey = 'tv_characters';
                 let currentTheme = this.themes[currentThemeKey];
                 
-                // If current theme doesn't exist, fall back to first available theme
+                // If tv_characters theme doesn't exist, fall back to first available theme
                 if (!currentTheme) {
                     const themeKeys = Object.keys(this.themes);
                     currentThemeKey = themeKeys[0];
@@ -563,11 +561,11 @@ class FaceGuessrGame {
             return;
         }
 
-        // Use the current theme key (ensures consistency between easy/hard)
-        let currentThemeKey = this.getCurrentThemeKey();
+        // Prioritize 'tv_characters' (Fictional Characters) as current theme
+        let currentThemeKey = 'tv_characters';
         let currentTheme = this.themes[currentThemeKey];
         
-        // If current theme doesn't exist, fall back to first available theme
+        // If tv_characters theme doesn't exist, fall back to first available theme
         if (!currentTheme) {
             const themeKeys = Object.keys(this.themes);
             currentThemeKey = themeKeys[0];
@@ -628,25 +626,17 @@ class FaceGuessrGame {
         this.loadImageWithFallback(currentFigure.imageUrl, `Person ${this.currentQuestionIndex + 1}`);
         this.crypticClue.textContent = currentFigure.clue;
         
-        // Check if this question has already been answered
-        const hasAnswer = this.answers[this.currentQuestionIndex];
-        
-        if (hasAnswer) {
-            // Show the completed question in review mode
-            this.displayCompletedQuestion(hasAnswer, currentFigure);
-        } else {
-            // Reset input state for new questions only
-            this.guessInput.value = '';
-            this.guessInput.disabled = false;
-            this.submitBtn.disabled = true;
-            this.submitBtn.style.display = 'block';
-            this.nextBtn.classList.add('hidden');
-            this.feedbackMessage.textContent = '';
-            this.feedbackMessage.className = '';
-            this.suggestionDialog.classList.add('hidden');
-            this.awaitingSuggestionResponse = false;
-            this.currentSuggestion = null;
-        }
+        // Reset input state
+        this.guessInput.value = '';
+        this.guessInput.disabled = false;
+        this.submitBtn.disabled = true;
+        this.submitBtn.style.display = 'block';
+        this.nextBtn.classList.add('hidden');
+        this.feedbackMessage.textContent = '';
+        this.feedbackMessage.className = '';
+        this.suggestionDialog.classList.add('hidden');
+        this.awaitingSuggestionResponse = false;
+        this.currentSuggestion = null;
     }
 
     displayCompletedQuestion(answer, figure) {
@@ -1036,18 +1026,7 @@ class FaceGuessrGame {
                 this.displayPreviousAnswer();
             }
         } else {
-            // Check if we're viewing a completed question and clicking next
-            if (this.answers[this.currentQuestionIndex] && this.nextBtn.textContent === 'View Results') {
-                this.showResults();
-                return;
-            } else if (this.answers[this.currentQuestionIndex] && this.nextBtn.textContent === 'Next Question') {
-                this.currentQuestionIndex++;
-                this.updateUI();
-                this.displayCurrentQuestion();
-                return;
-            }
-            
-            // Normal next question logic for new questions
+            // Normal next question logic
             this.currentQuestionIndex++;
         }
         
@@ -1302,9 +1281,8 @@ class FaceGuessrGame {
     updateChangeDifficultyButton() {
         if (this.selectedDifficulty && this.changeDifficultyBtn) {
             this.changeDifficultyBtn.classList.remove('hidden');
-            // Update button text to show current difficulty
-            const currentDiff = this.selectedDifficulty === 'easy' ? 'Easy' : 'Hard';
-            this.changeDifficultyBtn.textContent = `Change (${currentDiff})`;
+            // Simple button text
+            this.changeDifficultyBtn.textContent = 'Difficulty';
         }
     }
 

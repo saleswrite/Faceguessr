@@ -62,6 +62,7 @@ header {
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
+    z-index: 10;
 }
 
 .change-difficulty-btn:hover {
@@ -72,6 +73,11 @@ header {
 
 .change-difficulty-btn.hidden {
     display: none;
+}
+
+/* Ensure title has proper spacing */
+header h1 {
+    margin: 0 120px; /* Add margin to prevent overlap with buttons */
 }
 
 h1 {
