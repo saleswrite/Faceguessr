@@ -743,15 +743,15 @@ footer {
 @media (max-width: 600px) {
     .suggestion-dialog {
         padding: 15px;
-        align-items: flex-start;
-        padding-top: 20vh;
+        align-items: center;
+        justify-content: center;
     }
     
     .suggestion-content {
         padding: 25px 20px;
         width: 100%;
-        max-width: 90vw;
-        max-height: 70vh;
+        max-width: 85vw;
+        max-height: 60vh;
     }
     
     .suggestion-text {
@@ -780,13 +780,14 @@ footer {
 @media (max-width: 480px) {
     .suggestion-dialog {
         padding: 10px;
-        padding-top: 15vh;
+        align-items: center;
+        justify-content: center;
     }
     
     .suggestion-content {
         padding: 20px 15px;
-        max-width: 95vw;
-        max-height: 75vh;
+        max-width: 90vw;
+        max-height: 65vh;
         border-radius: 8px;
     }
     
@@ -810,14 +811,15 @@ footer {
 
 @media (max-width: 400px) {
     .suggestion-dialog {
-        padding: 5px;
-        padding-top: 10vh;
+        padding: 8px;
+        align-items: center;
+        justify-content: center;
     }
     
     .suggestion-content {
         padding: 18px 12px;
-        max-width: 98vw;
-        max-height: 80vh;
+        max-width: 95vw;
+        max-height: 70vh;
     }
     
     .suggestion-text {
