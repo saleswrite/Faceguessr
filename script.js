@@ -1113,6 +1113,24 @@ class FaceGuessrGame {
         this.resultsScreen.classList.remove('hidden');
         this.finalScore.textContent = `${this.score}`;
         
+        // Remove any existing score message
+        const existingMessage = document.querySelector('.score-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+        
+        // Add cheeky score message
+        const scoreMessage = this.getScoreMessage();
+        if (scoreMessage) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'score-message';
+            messageDiv.textContent = scoreMessage;
+            
+            // Insert after final score but before score breakdown
+            const scoreDetailsParent = this.scoreDetails.parentNode;
+            scoreDetailsParent.insertBefore(messageDiv, this.scoreDetails);
+        }
+        
         // Show score breakdown
         this.scoreDetails.innerHTML = '';
         this.answers.forEach((answer, index) => {
@@ -1133,6 +1151,31 @@ class FaceGuessrGame {
 
         this.updateProgress();
         this.saveGame();
+    }
+
+    getScoreMessage() {
+        const score = this.score;
+        const difficulty = this.selectedDifficulty;
+        
+        if (difficulty === 'hard') {
+            if (score <= 3) {
+                return "Lol you're dumb - do the easy one";
+            } else if (score === 4) {
+                return "Very good effort";
+            } else if (score === 5) {
+                return "Exceptional work";
+            }
+        } else if (difficulty === 'easy') {
+            if (score <= 3) {
+                return "Lol you're very stupid";
+            } else if (score === 4) {
+                return "Hmm, stay on the easy one for now";
+            } else if (score === 5) {
+                return "Excellent - you may do the hard one";
+            }
+        }
+        
+        return null;
     }
 
     showHowToPlay() {
