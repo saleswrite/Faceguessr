@@ -28,10 +28,10 @@ header {
     position: relative;
 }
 
-.rules-btn {
+/* Header button styles - consistent sizing */
+.rules-btn, .change-difficulty-btn {
     position: absolute;
     top: 0;
-    left: 0;
     background: none;
     border: 1px solid #3a3a3c;
     color: #d4d4d4;
@@ -41,50 +41,72 @@ header {
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
+    white-space: nowrap;
 }
 
-.rules-btn:hover {
+.rules-btn:hover, .change-difficulty-btn:hover {
     background-color: #3a3a3c;
     color: #ffffff;
     transform: translateY(-1px);
+}
+
+.rules-btn {
+    left: 0;
 }
 
 .change-difficulty-btn {
-    position: absolute;
-    top: 0;
     right: 0;
-    background: none;
-    border: 1px solid #3a3a3c;
-    color: #d4d4d4;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    z-index: 10;
-}
-
-.change-difficulty-btn:hover {
-    background-color: #3a3a3c;
-    color: #ffffff;
-    transform: translateY(-1px);
 }
 
 .change-difficulty-btn.hidden {
     display: none;
 }
 
-/* Ensure title has proper spacing */
-header h1 {
-    margin: 0 120px; /* Add margin to prevent overlap with buttons */
-}
+/* Ensure title has proper spacing - removed fixed margins for mobile responsiveness */
 
 h1 {
     font-size: 2.5rem;
     font-weight: bold;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
+    padding: 0 100px; /* Add padding instead of margin for better mobile handling */
+}
+
+/* Mobile responsiveness improvements for header */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+        padding: 0 80px; /* Reduce padding on smaller screens */
+    }
+    
+    .rules-btn, .change-difficulty-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+        padding: 0 70px;
+    }
+    
+    .rules-btn, .change-difficulty-btn {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.6rem;
+        padding: 0 60px;
+    }
+    
+    .rules-btn, .change-difficulty-btn {
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
 }
 
 .subtitle {
@@ -559,12 +581,7 @@ footer {
     }
 }
 
-@media (max-width: 400px) {
-    .rules-btn {
-        padding: 5px 10px;
-        font-size: 0.75rem;
-        border-radius: 14px;
-    }
+/* Removed duplicate rules-btn styling - now handled in main media queries above */
     
     .image-container {
         width: 200px;

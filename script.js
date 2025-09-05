@@ -296,9 +296,11 @@ class FaceGuessrGame {
                 .from('faces')
                 .select('*');
             
-            // Filter by difficulty if specified
+            // Filter by difficulty and ensure same theme for both difficulties
             if (difficulty) {
-                query = query.eq('difficulty', difficulty);
+                // Get current theme for the day
+                const currentThemeKey = this.getCurrentThemeKey();
+                query = query.eq('difficulty', difficulty).eq('theme', currentThemeKey);
             }
                 
             const { data, error } = await query;
@@ -500,14 +502,14 @@ class FaceGuessrGame {
         
         // Check if we need to clear old data due to database migration
         const dbVersion = localStorage.getItem('faceguessr_db_version');
-        if (dbVersion !== '2.3') {
+        if (dbVersion !== '2.4') {
             // Clear all old game data
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('faceguessr_game_')) {
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.setItem('faceguessr_db_version', '2.3');
+            localStorage.setItem('faceguessr_db_version', '2.4');
             // Proceed without saved game
             this.generateDailyFigures();
             this.updateUI();
@@ -524,11 +526,11 @@ class FaceGuessrGame {
             
             // Set theme name for saved games
             if (this.themes) {
-                // Prioritize 'tv_characters' theme
-                let currentThemeKey = 'tv_characters';
+                // Use the current theme key for consistency
+                let currentThemeKey = this.getCurrentThemeKey();
                 let currentTheme = this.themes[currentThemeKey];
                 
-                // If tv_characters theme doesn't exist, fall back to first available theme
+                // If current theme doesn't exist, fall back to first available theme
                 if (!currentTheme) {
                     const themeKeys = Object.keys(this.themes);
                     currentThemeKey = themeKeys[0];
@@ -561,11 +563,11 @@ class FaceGuessrGame {
             return;
         }
 
-        // Prioritize 'tv_characters' (Fictional Characters) as current theme
-        let currentThemeKey = 'tv_characters';
+        // Use the current theme key (ensures consistency between easy/hard)
+        let currentThemeKey = this.getCurrentThemeKey();
         let currentTheme = this.themes[currentThemeKey];
         
-        // If tv_characters theme doesn't exist, fall back to first available theme
+        // If current theme doesn't exist, fall back to first available theme
         if (!currentTheme) {
             const themeKeys = Object.keys(this.themes);
             currentThemeKey = themeKeys[0];
