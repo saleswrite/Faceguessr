@@ -49,6 +49,31 @@ header {
     transform: translateY(-1px);
 }
 
+.change-difficulty-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: 1px solid #3a3a3c;
+    color: #d4d4d4;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.change-difficulty-btn:hover {
+    background-color: #3a3a3c;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.change-difficulty-btn.hidden {
+    display: none;
+}
+
 h1 {
     font-size: 2.5rem;
     font-weight: bold;

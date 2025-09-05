@@ -188,18 +188,74 @@ class FaceGuessrGame {
         this.difficultyModal.classList.add('hidden');
     }
 
+    changeDifficultyMidGame() {
+        // Save current progress before switching
+        this.saveGame();
+        
+        // Show difficulty selection modal
+        this.showDifficultySelectionForChange();
+    }
+
+    showDifficultySelectionForChange() {
+        // Update the difficulty modal content for mid-game change
+        const difficultyContent = document.querySelector('.difficulty-content h2');
+        const difficultyDescription = document.querySelector('.difficulty-description');
+        
+        if (difficultyContent) {
+            difficultyContent.textContent = 'Switch Difficulty';
+        }
+        if (difficultyDescription) {
+            difficultyDescription.textContent = 'Your current progress will be saved. Choose a new difficulty:';
+        }
+        
+        // Show the modal
+        this.difficultyModal.classList.remove('hidden');
+        
+        // Hide the switch difficulty button since we're already switching
+        this.switchDifficultyBtn.classList.add('hidden');
+    }
+
     async selectDifficulty(difficulty) {
+        const wasChangingMidGame = !this.difficultyModal.classList.contains('hidden');
+        
         this.selectedDifficulty = difficulty;
         this.difficultySelected = true;
         this.hideDifficultySelection();
+        
+        // Reset difficulty modal content back to normal
+        const difficultyContent = document.querySelector('.difficulty-content h2');
+        const difficultyDescription = document.querySelector('.difficulty-description');
+        if (difficultyContent) {
+            difficultyContent.textContent = 'Choose Your Difficulty';
+        }
+        if (difficultyDescription) {
+            difficultyDescription.textContent = 'Select how challenging you want today\'s faces to be:';
+        }
         
         // Load themes with difficulty filter
         this.showLoadingState();
         this.themes = await this.fetchThemesFromSupabase(difficulty);
         this.hideLoadingState();
         
-        // Load today's game with selected difficulty
-        this.loadTodaysGame();
+        if (wasChangingMidGame) {
+            // Reset game state for new difficulty
+            this.score = 0;
+            this.answers = [];
+            this.currentQuestionIndex = 0;
+            this.gameCompleted = false;
+            this.reviewMode = false;
+            
+            // Generate new figures for selected difficulty
+            this.generateDailyFigures();
+            this.updateUI();
+            this.displayCurrentQuestion();
+        } else {
+            // Normal game start
+            this.loadTodaysGame();
+        }
+        
+        // Show/update the change difficulty button
+        this.updateChangeDifficultyButton();
     }
 
     showLoadingState() {
@@ -240,9 +296,11 @@ class FaceGuessrGame {
                 .from('faces')
                 .select('*');
             
-            // Filter by difficulty if specified
+            // Filter by difficulty and ensure same theme for both difficulties
             if (difficulty) {
-                query = query.eq('difficulty', difficulty);
+                // Get current theme for the day
+                const currentThemeKey = this.getCurrentThemeKey();
+                query = query.eq('difficulty', difficulty).eq('theme', currentThemeKey);
             }
                 
             const { data, error } = await query;
@@ -301,6 +359,18 @@ class FaceGuessrGame {
         return themeNames[themeKey] || themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
     }
 
+    getCurrentThemeKey() {
+        // Force tv_characters (Fictional Characters) as current theme key
+        // This ensures both easy and hard difficulties use the same theme
+        return 'tv_characters';
+        
+        // Future implementation could rotate themes based on day:
+        // const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
+        // const themeKeys = ['tv_characters', 'historical', 'business', 'musicians', 'artists'];
+        // const themeIndex = ((dayNumber - 1) % themeKeys.length);
+        // return themeKeys[themeIndex];
+    }
+
     initializeElements() {
         this.personImage = document.getElementById('person-image');
         this.crypticClue = document.getElementById('cryptic-clue');
@@ -339,6 +409,7 @@ class FaceGuessrGame {
         this.easyBtn = document.getElementById('easy-btn');
         this.hardBtn = document.getElementById('hard-btn');
         this.switchDifficultyBtn = document.getElementById('switch-difficulty-btn');
+        this.changeDifficultyBtn = document.getElementById('change-difficulty-btn');
     }
 
     setupEventListeners() {
@@ -370,6 +441,7 @@ class FaceGuessrGame {
         this.easyBtn.addEventListener('click', () => this.selectDifficulty('easy'));
         this.hardBtn.addEventListener('click', () => this.selectDifficulty('hard'));
         this.switchDifficultyBtn.addEventListener('click', () => this.showDifficultySelection());
+        this.changeDifficultyBtn.addEventListener('click', () => this.changeDifficultyMidGame());
         
         this.guessInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -454,22 +526,23 @@ class FaceGuessrGame {
             
             // Set theme name for saved games
             if (this.themes) {
-                // Prioritize 'tv_characters' theme
-                let currentThemeKey = 'tv_characters';
+                // Use the current theme key for consistency
+                let currentThemeKey = this.getCurrentThemeKey();
                 let currentTheme = this.themes[currentThemeKey];
                 
-                // If tv_characters theme doesn't exist, fall back to rotation logic
+                // If current theme doesn't exist, fall back to first available theme
                 if (!currentTheme) {
-                    const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
                     const themeKeys = Object.keys(this.themes);
-                    const themeIndex = ((dayNumber - 1) % themeKeys.length);
-                    currentThemeKey = themeKeys[themeIndex];
+                    currentThemeKey = themeKeys[0];
                     currentTheme = this.themes[currentThemeKey];
                 }
                 
                 this.currentThemeName = currentTheme ? currentTheme.name : Object.values(this.themes)[0]?.name || 'Daily Faces';
                 this.updateThemeSubtitle();
             }
+            
+            // Update change difficulty button
+            this.updateChangeDifficultyButton();
             
             if (this.answers.length >= this.totalQuestions) {
                 this.showResults();
@@ -481,6 +554,7 @@ class FaceGuessrGame {
         
         this.updateUI();
         this.displayCurrentQuestion();
+        this.updateChangeDifficultyButton();
     }
 
     generateDailyFigures() {
@@ -489,16 +563,14 @@ class FaceGuessrGame {
             return;
         }
 
-        // Prioritize 'tv_characters' (Fictional Characters) as current theme
-        let currentThemeKey = 'tv_characters';
+        // Use the current theme key (ensures consistency between easy/hard)
+        let currentThemeKey = this.getCurrentThemeKey();
         let currentTheme = this.themes[currentThemeKey];
         
-        // If tv_characters theme doesn't exist, fall back to rotation logic
+        // If current theme doesn't exist, fall back to first available theme
         if (!currentTheme) {
-            const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
             const themeKeys = Object.keys(this.themes);
-            const themeIndex = ((dayNumber - 1) % themeKeys.length);
-            currentThemeKey = themeKeys[themeIndex];
+            currentThemeKey = themeKeys[0];
             currentTheme = this.themes[currentThemeKey];
         }
         
@@ -556,17 +628,55 @@ class FaceGuessrGame {
         this.loadImageWithFallback(currentFigure.imageUrl, `Person ${this.currentQuestionIndex + 1}`);
         this.crypticClue.textContent = currentFigure.clue;
         
-        // Reset input state
-        this.guessInput.value = '';
-        this.guessInput.disabled = false;
-        this.submitBtn.disabled = true;
-        this.submitBtn.style.display = 'block';
-        this.nextBtn.classList.add('hidden');
-        this.feedbackMessage.textContent = '';
+        // Check if this question has already been answered
+        const hasAnswer = this.answers[this.currentQuestionIndex];
+        
+        if (hasAnswer) {
+            // Show the completed question in review mode
+            this.displayCompletedQuestion(hasAnswer, currentFigure);
+        } else {
+            // Reset input state for new questions only
+            this.guessInput.value = '';
+            this.guessInput.disabled = false;
+            this.submitBtn.disabled = true;
+            this.submitBtn.style.display = 'block';
+            this.nextBtn.classList.add('hidden');
+            this.feedbackMessage.textContent = '';
+            this.feedbackMessage.className = '';
+            this.suggestionDialog.classList.add('hidden');
+            this.awaitingSuggestionResponse = false;
+            this.currentSuggestion = null;
+        }
+    }
+
+    displayCompletedQuestion(answer, figure) {
+        // Show the user's previous answer
+        this.guessInput.value = answer.guess;
+        this.guessInput.disabled = true;
+        
+        // Hide submit button
+        this.submitBtn.style.display = 'none';
+        
+        // Show feedback for the completed question
         this.feedbackMessage.className = '';
-        this.suggestionDialog.classList.add('hidden');
-        this.awaitingSuggestionResponse = false;
-        this.currentSuggestion = null;
+        if (answer.correct) {
+            this.feedbackMessage.textContent = `✅ Your guess: "${answer.guess}" - Correct!`;
+            this.feedbackMessage.classList.add('correct');
+        } else {
+            this.feedbackMessage.textContent = `❌ Your guess: "${answer.guess}" - Wrong! Answer: ${answer.answer}`;
+            this.feedbackMessage.classList.add('incorrect');
+        }
+        
+        // Show appropriate navigation
+        if (this.currentQuestionIndex + 1 >= this.totalQuestions) {
+            // Last question - show results button
+            this.nextBtn.classList.remove('hidden');
+            this.nextBtn.textContent = 'View Results';
+        } else {
+            // Not last question - show next button
+            this.nextBtn.classList.remove('hidden');
+            this.nextBtn.textContent = 'Next Question';
+        }
     }
 
     // Levenshtein distance algorithm for fuzzy matching
@@ -926,7 +1036,18 @@ class FaceGuessrGame {
                 this.displayPreviousAnswer();
             }
         } else {
-            // Normal next question logic
+            // Check if we're viewing a completed question and clicking next
+            if (this.answers[this.currentQuestionIndex] && this.nextBtn.textContent === 'View Results') {
+                this.showResults();
+                return;
+            } else if (this.answers[this.currentQuestionIndex] && this.nextBtn.textContent === 'Next Question') {
+                this.currentQuestionIndex++;
+                this.updateUI();
+                this.displayCurrentQuestion();
+                return;
+            }
+            
+            // Normal next question logic for new questions
             this.currentQuestionIndex++;
         }
         
@@ -1176,6 +1297,15 @@ class FaceGuessrGame {
         }
         
         return null;
+    }
+
+    updateChangeDifficultyButton() {
+        if (this.selectedDifficulty && this.changeDifficultyBtn) {
+            this.changeDifficultyBtn.classList.remove('hidden');
+            // Update button text to show current difficulty
+            const currentDiff = this.selectedDifficulty === 'easy' ? 'Easy' : 'Hard';
+            this.changeDifficultyBtn.textContent = `Change (${currentDiff})`;
+        }
     }
 
     showHowToPlay() {
