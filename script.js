@@ -239,11 +239,12 @@ class FaceGuessrGame {
         const themeNames = {
             'historical': 'Historical Faces',
             'business': 'Business Faces', 
-            'tv_characters': 'TV Character Faces',
-            'musicians': 'Music Faces',
-            'athletes': 'Sports Faces'
+            'tv_characters': 'Fictional Characters',
+            'musicians': 'Musicians',
+            'athletes': 'Athletes',
+            'artists': 'Artists'
         };
-        return themeNames[themeKey] || `Theme ${themeKey}`;
+        return themeNames[themeKey] || themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
     }
 
     initializeElements() {
@@ -375,11 +376,19 @@ class FaceGuessrGame {
             
             // Set theme name for saved games
             if (this.themes) {
-                const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
-                const themeKeys = Object.keys(this.themes);
-                const themeIndex = ((dayNumber - 1) % themeKeys.length);
-                const currentThemeKey = themeKeys[themeIndex];
-                const currentTheme = this.themes[currentThemeKey];
+                // Prioritize 'tv_characters' theme
+                let currentThemeKey = 'tv_characters';
+                let currentTheme = this.themes[currentThemeKey];
+                
+                // If tv_characters theme doesn't exist, fall back to rotation logic
+                if (!currentTheme) {
+                    const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
+                    const themeKeys = Object.keys(this.themes);
+                    const themeIndex = ((dayNumber - 1) % themeKeys.length);
+                    currentThemeKey = themeKeys[themeIndex];
+                    currentTheme = this.themes[currentThemeKey];
+                }
+                
                 this.currentThemeName = currentTheme ? currentTheme.name : Object.values(this.themes)[0]?.name || 'Daily Faces';
                 this.updateThemeSubtitle();
             }
@@ -402,12 +411,18 @@ class FaceGuessrGame {
             return;
         }
 
-        // Get current day number to determine theme
-        const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
-        const themeKeys = Object.keys(this.themes);
-        const themeIndex = ((dayNumber - 1) % themeKeys.length);
-        const currentThemeKey = themeKeys[themeIndex];
-        const currentTheme = this.themes[currentThemeKey];
+        // Prioritize 'tv_characters' (Fictional Characters) as current theme
+        let currentThemeKey = 'tv_characters';
+        let currentTheme = this.themes[currentThemeKey];
+        
+        // If tv_characters theme doesn't exist, fall back to rotation logic
+        if (!currentTheme) {
+            const dayNumber = Math.max(1, this.getDaysSinceEpoch() + 1);
+            const themeKeys = Object.keys(this.themes);
+            const themeIndex = ((dayNumber - 1) % themeKeys.length);
+            currentThemeKey = themeKeys[themeIndex];
+            currentTheme = this.themes[currentThemeKey];
+        }
         
         if (currentTheme && currentTheme.figures && currentTheme.figures.length >= 5) {
             this.dailyFigures = [...currentTheme.figures];
