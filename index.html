@@ -153,35 +153,8 @@
     <!-- Modal container for proper portal behavior -->
     <div id="fg-modal-container" style="display:none"></div>
 
-    <script type="module">
-    // Visual viewport centering helper (inline for simplicity)
-    function attachVisualViewportCentering(dialog) {
-      const node = typeof dialog === 'string' ? document.querySelector(dialog) : dialog;
-      if (!node) return () => {};
-
-      const vv = window.visualViewport;
-      if (!vv) return () => {}; // desktop fallback uses CSS translate
-
-      const center = () => {
-        const top = vv.offsetTop + (vv.height / 2);
-        const left = vv.offsetLeft + (vv.width / 2);
-        node.style.top = `${top}px`;
-        node.style.left = `${left}px`;
-        node.style.transform = 'translate(-50%, -50%)';
-      };
-
-      center();
-      const onChange = () => center();
-      vv.addEventListener('resize', onChange);
-      vv.addEventListener('scroll', onChange);
-
-      return () => {
-        vv.removeEventListener('resize', onChange);
-        vv.removeEventListener('scroll', onChange);
-      };
-    }
-
-    // FaceGuessr Modal Implementation with Visual Viewport
+    <script>
+    // BULLETPROOF Modal Implementation - NO VISUAL VIEWPORT COMPLEXITY
     (function(){
       const root = document.getElementById('fg-modal-container');
 
@@ -210,11 +183,7 @@
         root.innerHTML = tpl(suggestion);
         lockScroll(true);
 
-        const dialog = root.querySelector('.fg-modal-dialog');
-        const disposeVV = attachVisualViewportCentering(dialog);
-
         const close = () => {
-          disposeVV && disposeVV();
           root.innerHTML = '';
           root.style.display = 'none';
           lockScroll(false);
