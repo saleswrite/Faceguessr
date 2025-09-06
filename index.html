@@ -3,234 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FaceGuessr - Daily Face Guessing Game</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        window.SUPABASE_URL = 'https://ezozxjzkxawdvaktrmgd.supabase.co';
-        window.SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6b3p4anpreGF3ZHZha3RybWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMjE1NjQsImV4cCI6MjA3MjU5NzU2NH0.reAfCAXY_8r9JSz199dZtPYpI6haxVVz1A9bHSM6NYM';
-    </script>
+    <title>FaceGuessr - Under Maintenance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #121213 0%, #1a1a1b 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(26, 26, 27, 0.8);
+            border-radius: 20px;
+            border: 2px solid #3a3a3c;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #6aaa64;
+            margin-bottom: 20px;
+            letter-spacing: 0.05em;
+        }
+        
+        .status {
+            background: #ff6b35;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .message {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #d4d4d4;
+        }
+        
+        .improvements {
+            background: #2a2a2c;
+            border: 1px solid #3a3a3c;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .improvements h3 {
+            color: #6aaa64;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .improvements ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .improvements li {
+            padding: 8px 0;
+            color: #ffffff;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .improvements li::before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+            color: #6aaa64;
+        }
+        
+        .eta {
+            font-size: 1.1rem;
+            color: #6aaa64;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .contact {
+            font-size: 0.9rem;
+            color: #818384;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #3a3a3c;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #3a3a3c;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6aaa64, #5a9a54);
+            width: 75%;
+            animation: progress 3s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0%, 100% { width: 75%; }
+            50% { width: 85%; }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .message {
+                font-size: 1.1rem;
+            }
+            
+            .improvements {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <button id="rules-btn" class="rules-btn">Rules</button>
-            <button id="change-difficulty-btn" class="change-difficulty-btn">Difficulty</button>
-            <h1>FaceGuessr</h1>
-            <p class="subtitle">Today's Theme: <strong>Faces</strong></p>
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div id="progress-fill"></div>
-                </div>
-                <p class="question-counter">
-                    Question <span id="current-question">1</span> of <span id="total-questions">5</span>
-                </p>
-            </div>
-        </header>
-
-        <main>
-            <div class="game-board">
-                <div class="image-container">
-                    <img id="person-image" src="" alt="Person to guess" />
-                </div>
-                
-                <div class="clue-container">
-                    <p id="cryptic-clue"></p>
-                </div>
-
-                <div class="guess-container">
-                    <input 
-                        type="text" 
-                        id="guess-input" 
-                        placeholder="Enter your guess..."
-                        maxlength="50"
-                    />
-                    <div class="button-container">
-                        <button id="previous-question-btn" class="hidden">Previous</button>
-                        <button id="submit-btn">Submit Guess</button>
-                        <button id="next-btn" class="hidden">Next Question</button>
-                    </div>
-                </div>
-
-                <div class="feedback-container">
-                    <div id="feedback-message"></div>
-                </div>
-            </div>
-            
-            <!-- Review Navigation (shown after game completion) -->
-            <div id="review-nav" class="review-nav hidden">
-                <div class="review-controls">
-                    <button id="prev-btn" class="nav-btn">‹ Previous</button>
-                    <span class="review-indicator">
-                        Reviewing: <span id="review-question">1</span> of 5
-                    </span>
-                    <button id="next-btn-review" class="nav-btn">Next ›</button>
-                </div>
-                <button id="show-results-btn" class="show-results-btn">View Results</button>
-            </div>
-        </main>
-
-
-        <footer>
-            <p>5 faces daily • Resets at midnight GMT • Score: <span id="current-score">0</span>/5</p>
-        </footer>
-
-        <!-- How to Play Popup -->
-        <div id="how-to-play-modal" class="how-to-play-modal hidden">
-            <div class="how-to-play-content">
-                <button id="close-how-to-play" class="close-btn">&times;</button>
-                <h2>How to Play</h2>
-                <div class="rules-explanation">
-                    <p class="rules-intro">Guess the 5 faces from today's theme using their photos and cryptic clues.</p>
-                    
-                    <div class="rules-section">
-                        <h3>Game Rules</h3>
-                        <ul class="rules-list">
-                            <li>Each day features a different theme (Fictional Characters, Historical Faces, Business Faces, Musicians, Artists)</li>
-                            <li>Choose your difficulty: Easy or Hard</li>
-                            <li>You get <strong>one guess per face</strong> - make it count!</li>
-                            <li>Use the cryptic clue to help identify each person</li>
-                            <li>Correct answers show ✅, wrong answers show ❌</li>
-                            <li>Share your daily score with friends!</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="rules-footer">
-                        <p>New puzzles daily at midnight GMT • Come back tomorrow for a fresh challenge!</p>
-                    </div>
-                </div>
-            </div>
+        <div class="logo">FaceGuessr</div>
+        <div class="status">🔧 Under Maintenance</div>
+        
+        <div class="message">
+            We're currently working hard to make FaceGuessr even better!
         </div>
-
-        <!-- Difficulty Selection Modal -->
-        <div id="difficulty-modal" class="difficulty-modal hidden">
-            <div class="difficulty-content">
-                <h2>Choose Your Difficulty</h2>
-                <p class="difficulty-description">Select how challenging you want today's faces to be:</p>
-                
-                <div class="difficulty-buttons">
-                    <button id="easy-btn" class="difficulty-btn easy-btn">
-                        <span class="difficulty-title">Easy</span>
-                        <span class="difficulty-desc">More recognizable faces</span>
-                    </button>
-                    <button id="hard-btn" class="difficulty-btn hard-btn">
-                        <span class="difficulty-title">Hard</span>
-                        <span class="difficulty-desc">More challenging faces</span>
-                    </button>
-                </div>
-                
-                <div class="difficulty-options">
-                    <button id="switch-difficulty-btn" class="switch-difficulty-btn hidden">Try Other Difficulty</button>
-                </div>
-            </div>
+        
+        <div class="progress">
+            <div class="progress-fill"></div>
         </div>
-
-        <!-- Results Screen -->
-        <div id="results-screen" class="results-screen hidden">
-            <div class="results-content">
-                <button id="close-results" class="close-btn">&times;</button>
-                <h2>Today's Results</h2>
-                <div class="final-score">
-                    <span id="final-score">0</span>/5
-                </div>
-                <div class="score-breakdown">
-                    <div id="score-details"></div>
-                </div>
-                <div class="share-section">
-                    <button id="share-btn">Share Your Score</button>
-                    <div id="share-text" class="share-text hidden">
-                        <textarea id="share-textarea" readonly></textarea>
-                        <button id="copy-btn">Copy to Clipboard</button>
-                    </div>
-                </div>
-                <div class="next-game-info">
-                    <p>New theme in: <span id="countdown"></span></p>
-                </div>
-            </div>
+        
+        <div class="improvements">
+            <h3>🚀 What We're Improving</h3>
+            <ul>
+                <li>Making the app bulletproof and more reliable</li>
+                <li>Fixing mobile responsiveness issues</li>
+                <li>Improving database performance</li>
+                <li>Enhancing the "Did you mean" suggestion system</li>
+                <li>Better error handling and user experience</li>
+                <li>Optimizing for all devices and browsers</li>
+            </ul>
+        </div>
+        
+        <div class="eta">
+            Expected back online: Soon! 
+        </div>
+        
+        <div class="message">
+            Thanks for your patience while we make these improvements. 
+            The new and improved FaceGuessr will be worth the wait! 🎯
+        </div>
+        
+        <div class="contact">
+            Follow updates or report issues on GitHub<br>
+            New puzzles will resume once maintenance is complete
         </div>
     </div>
-
-    <!-- Bootstrap Modal for "Did you mean" -->
-    <div class="modal fade" id="didYouMeanModal" tabindex="-1" aria-labelledby="didYouMeanModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background-color: #1b1b1b; border: 2px solid #3a3a3c; color: #ffffff;">
-          <div class="modal-header border-0" style="padding-bottom: 0;">
-            <h5 class="modal-title w-100 text-center" id="didYouMeanModalLabel" style="color: #ffffff;">Did you mean:</h5>
-          </div>
-          <div class="modal-body text-center">
-            <div id="suggestion-text" style="
-              font-size: 1.2rem;
-              font-weight: bold;
-              color: #6aaa64;
-              padding: 12px;
-              background-color: #2a2a2c;
-              border-radius: 8px;
-              border: 1px solid #3a3a3c;
-              margin-bottom: 20px;
-            "></div>
-          </div>
-          <div class="modal-footer border-0 justify-content-center">
-            <button type="button" class="btn" id="acceptBtn" style="
-              background-color: #3aa657;
-              color: #ffffff;
-              border: none;
-              padding: 10px 20px;
-              border-radius: 8px;
-              font-weight: 600;
-              min-width: 80px;
-            ">Yes</button>
-            <button type="button" class="btn" id="rejectBtn" style="
-              background-color: #666666;
-              color: #ffffff;
-              border: none;
-              padding: 10px 20px;
-              border-radius: 8px;
-              font-weight: 600;
-              min-width: 80px;
-            ">No</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script>
-    // Bootstrap Modal Implementation for "Did you mean"
-    window.openDidYouMeanModal = function({ suggestion, onAccept, onReject }) {
-      // Set the suggestion text
-      document.getElementById('suggestion-text').textContent = suggestion;
-      
-      // Get the Bootstrap modal instance
-      const modalElement = document.getElementById('didYouMeanModal');
-      const modal = new bootstrap.Modal(modalElement);
-      
-      // Clear any existing event listeners
-      const acceptBtn = document.getElementById('acceptBtn');
-      const rejectBtn = document.getElementById('rejectBtn');
-      
-      // Clone buttons to remove existing listeners
-      const newAcceptBtn = acceptBtn.cloneNode(true);
-      const newRejectBtn = rejectBtn.cloneNode(true);
-      acceptBtn.parentNode.replaceChild(newAcceptBtn, acceptBtn);
-      rejectBtn.parentNode.replaceChild(newRejectBtn, rejectBtn);
-      
-      // Add new event listeners
-      newAcceptBtn.addEventListener('click', () => {
-        onAccept?.();
-        modal.hide();
-      });
-      
-      newRejectBtn.addEventListener('click', () => {
-        onReject?.();
-        modal.hide();
-      });
-      
-      // Show the modal
-      modal.show();
-    };
-    </script>
-
-    <script src="script.js"></script>
 </body>
 </html>

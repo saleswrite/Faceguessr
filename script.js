@@ -1,8 +1,70 @@
 // Initialize Supabase client
+console.log('Initializing Supabase...');
+console.log('Supabase library available:', !!window.supabase);
+console.log('SUPABASE_URL:', window.SUPABASE_URL);
+console.log('SUPABASE_ANON length:', window.SUPABASE_ANON?.length || 0);
+
 const { createClient } = supabase;
 const supabaseUrl = window.SUPABASE_URL;
 const supabaseKey = window.SUPABASE_ANON;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase configuration!');
+}
+
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
+console.log('Supabase client created:', !!supabaseClient);
+
+// Add a manual test function you can call in console
+window.testSupabase = async function() {
+    console.log('=== MANUAL SUPABASE TEST ===');
+    try {
+        console.log('Testing connection...');
+        const result = await supabaseClient.from('faces').select('*').limit(5);
+        console.log('Direct query result:', result);
+        
+        if (result.error) {
+            console.error('ERROR:', result.error);
+            return false;
+        }
+        
+        console.log('SUCCESS: Found', result.data.length, 'faces');
+        console.log('Sample data:', result.data[0]);
+        return result.data;
+    } catch (error) {
+        console.error('EXCEPTION:', error);
+        return false;
+    }
+};
+
+// Force reload with fresh Supabase data
+window.forceSupabaseReload = async function() {
+    console.log('=== FORCING SUPABASE RELOAD ===');
+    try {
+        const game = window.gameInstance; // Assuming game instance is stored
+        if (!game) {
+            console.error('Game instance not found');
+            return;
+        }
+        
+        // Clear any cached data
+        localStorage.clear();
+        
+        // Force fetch from Supabase
+        const themes = await game.fetchThemesFromSupabase('easy');
+        console.log('Forced fetch result:', themes);
+        
+        // Update game themes
+        game.themes = themes;
+        game.generateDailyFigures();
+        game.updateUI();
+        game.displayCurrentQuestion();
+        
+        console.log('✅ Forced reload complete');
+    } catch (error) {
+        console.error('❌ Force reload failed:', error);
+    }
+};
 
 // Fallback themes (keep for offline/error scenarios)
 const fallbackThemes = {
@@ -156,13 +218,23 @@ class FaceGuessrGame {
             // Hide loading state
             this.hideLoadingState();
             
+            // IMPORTANT: Check if we actually got Supabase data
+            if (this.themes === fallbackThemes) {
+                console.warn('⚠️ Using fallback themes - Supabase data not loaded!');
+                // Force show an alert so user knows
+                alert('Warning: Using offline data. Check console for Supabase connection issues.');
+            } else {
+                console.log('✅ Successfully loaded data from Supabase');
+            }
+            
             // Check if user has selected difficulty or completed game today
             this.checkDifficultySelection();
         } catch (error) {
-            console.error('Error initializing game:', error);
+            console.error('CRITICAL Error initializing game:', error);
             // Use fallback themes if Supabase fails
             this.themes = fallbackThemes;
             this.hideLoadingState();
+            alert('Critical error: Using offline data only. Check console.');
             this.checkDifficultySelection();
         }
     }
@@ -301,32 +373,62 @@ class FaceGuessrGame {
     }
 
     async fetchThemesFromSupabase(difficulty = null) {
+        console.log('=== SUPABASE FETCH DEBUG ===');
+        console.log('Supabase URL:', window.SUPABASE_URL);
+        console.log('Supabase client initialized:', !!supabaseClient);
+        
         try {
             const currentThemeKey = this.getCurrentThemeKey();
             console.log('Fetching faces for theme:', currentThemeKey, 'difficulty:', difficulty);
             
-            // Always get all faces for the current theme, then filter client-side
-            let query = supabaseClient
-                .from('faces')
-                .select('*')
-                .eq('theme', currentThemeKey); // Only get current theme
-                
-            const { data, error } = await query;
+            // Test basic connection first
+            console.log('Testing basic Supabase connection...');
+            const testQuery = await supabaseClient.from('faces').select('*').limit(1);
+            console.log('Test query result:', testQuery);
             
-            if (error) {
-                console.error('Error fetching from Supabase:', error);
+            if (testQuery.error) {
+                console.error('❌ Basic connection test failed:', testQuery.error);
+                console.error('Error details:', testQuery.error.message, testQuery.error.details);
+                console.log('🔄 Falling back to hardcoded themes');
+                return fallbackThemes;
+            }
+            
+            console.log('✅ Basic Supabase connection successful');
+            
+            // Try to get ALL faces first (no theme filter)
+            console.log('Fetching ALL faces from database...');
+            const allFacesQuery = await supabaseClient.from('faces').select('*');
+            console.log('All faces query result:', allFacesQuery);
+            
+            if (allFacesQuery.error) {
+                console.error('❌ Error fetching all faces:', allFacesQuery.error);
+                console.error('Error details:', allFacesQuery.error.message, allFacesQuery.error.details);
+                console.log('🔄 Using fallback themes due to fetch error');
+                return fallbackThemes;
+            }
+            
+            console.log('Total faces in database:', allFacesQuery.data?.length || 0);
+            console.log('Available themes:', [...new Set(allFacesQuery.data?.map(f => f.theme) || [])]);
+            
+            // Now filter by current theme
+            const themeData = allFacesQuery.data?.filter(face => face.theme === currentThemeKey) || [];
+            console.log(`Faces for theme '${currentThemeKey}':`, themeData.length);
+            
+            if (themeData.length === 0) {
+                console.warn(`No faces found for theme '${currentThemeKey}', using fallback`);
                 return fallbackThemes;
             }
 
-            console.log('Raw data from Supabase:', data);
-            console.log('Number of faces found:', data?.length || 0);
-
-            // Filter by difficulty if specified, then group by theme
-            let filteredData = data;
+            // Filter by difficulty if specified
+            let filteredData = themeData;
             if (difficulty) {
-                filteredData = data.filter(face => face.difficulty === difficulty);
-                console.log(`Filtered for difficulty '${difficulty}':`, filteredData);
-                console.log('Number after filtering:', filteredData.length);
+                filteredData = themeData.filter(face => face.difficulty === difficulty);
+                console.log(`Filtered for difficulty '${difficulty}':`, filteredData.length);
+                
+                if (filteredData.length === 0) {
+                    console.warn(`No faces found for difficulty '${difficulty}', using all faces for theme`);
+                    filteredData = themeData; // Use all faces for the theme if no difficulty match
+                }
             }
 
             // Group faces by theme
@@ -359,9 +461,28 @@ class FaceGuessrGame {
                 });
             });
 
+            console.log('Final theme groups:', themeGroups);
+            
+            // Ensure we have at least one theme with figures
+            const themeKeys = Object.keys(themeGroups);
+            if (themeKeys.length === 0) {
+                console.warn('No theme groups created, using fallback');
+                return fallbackThemes;
+            }
+            
+            // Check if the theme has enough figures
+            const mainTheme = themeGroups[themeKeys[0]];
+            if (!mainTheme || !mainTheme.figures || mainTheme.figures.length < 5) {
+                console.warn('Insufficient figures in theme, using fallback');
+                return fallbackThemes;
+            }
+            
+            console.log('Successfully loaded themes from Supabase');
             return themeGroups;
         } catch (error) {
-            console.error('Error connecting to Supabase:', error);
+            console.error('CRITICAL ERROR connecting to Supabase:', error);
+            console.error('Error stack:', error.stack);
+            console.log('Using fallback themes due to critical error');
             return fallbackThemes;
         }
     }
@@ -1310,5 +1431,5 @@ class FaceGuessrGame {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new FaceGuessrGame();
+    window.gameInstance = new FaceGuessrGame();
 });
