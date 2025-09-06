@@ -129,6 +129,16 @@ class FaceGuessrGame {
         this.themes = null; // Will be loaded from Supabase
         this.selectedDifficulty = null; // 'easy' or 'hard'
         this.difficultySelected = false;
+        
+        // Check if we should force refresh (add ?refresh=1 to URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('refresh') === '1') {
+            console.log('Force refresh requested - clearing all localStorage');
+            localStorage.clear();
+            // Remove the refresh parameter
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+        
         this.initializeElements();
         this.setupEventListeners();
         this.initializeGame();
@@ -292,14 +302,14 @@ class FaceGuessrGame {
 
     async fetchThemesFromSupabase(difficulty = null) {
         try {
+            const currentThemeKey = this.getCurrentThemeKey();
+            console.log('Fetching faces for theme:', currentThemeKey, 'difficulty:', difficulty);
+            
+            // Always get all faces for the current theme, then filter client-side
             let query = supabaseClient
                 .from('faces')
-                .select('*');
-            
-            // Filter by difficulty if specified
-            if (difficulty) {
-                query = query.eq('difficulty', difficulty);
-            }
+                .select('*')
+                .eq('theme', currentThemeKey); // Only get current theme
                 
             const { data, error } = await query;
             
@@ -308,9 +318,20 @@ class FaceGuessrGame {
                 return fallbackThemes;
             }
 
+            console.log('Raw data from Supabase:', data);
+            console.log('Number of faces found:', data?.length || 0);
+
+            // Filter by difficulty if specified, then group by theme
+            let filteredData = data;
+            if (difficulty) {
+                filteredData = data.filter(face => face.difficulty === difficulty);
+                console.log(`Filtered for difficulty '${difficulty}':`, filteredData);
+                console.log('Number after filtering:', filteredData.length);
+            }
+
             // Group faces by theme
             const themeGroups = {};
-            data.forEach(face => {
+            filteredData.forEach(face => {
                 const themeKey = face.theme;
                 if (!themeGroups[themeKey]) {
                     themeGroups[themeKey] = {
@@ -494,14 +515,15 @@ class FaceGuessrGame {
         
         // Check if we need to clear old data due to database migration
         const dbVersion = localStorage.getItem('faceguessr_db_version');
-        if (dbVersion !== '2.5') {
+        if (dbVersion !== '2.6') {
+            console.log('Clearing old data due to database update');
             // Clear all old game data
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('faceguessr_game_')) {
                     localStorage.removeItem(key);
                 }
             });
-            localStorage.setItem('faceguessr_db_version', '2.5');
+            localStorage.setItem('faceguessr_db_version', '2.6');
             // Proceed without saved game
             this.generateDailyFigures();
             this.updateUI();
